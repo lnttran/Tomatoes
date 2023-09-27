@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/Components/bottom_bar.dart';
 import 'package:tomatoes/Components/textfield_login.dart';
-import 'package:tomatoes/Components/login_button.dart';
+import 'package:tomatoes/Components/material_button.dart';
 import 'package:tomatoes/method/convertTime.dart';
 import 'package:tomatoes/Components/userClass.dart';
 
@@ -205,7 +205,7 @@ class _signupState extends State<signup> {
                       height: 20,
                     ),
                     //sign in button
-                    login_button(
+                    material_button(
                       onTap: SignUserUp,
                       text: 'Sign Up',
                     ),

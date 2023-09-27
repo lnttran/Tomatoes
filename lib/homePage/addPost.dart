@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tomatoes/Components/label_textfield.dart';
 import 'package:tomatoes/Components/textfield_login.dart';
-import 'package:tomatoes/Components/login_button.dart';
+import 'package:tomatoes/Components/material_button.dart';
 
 class addPost extends StatelessWidget {
   final textController = TextEditingController();
@@ -11,6 +12,15 @@ class addPost extends StatelessWidget {
   addPost({
     super.key,
   });
+
+  /// Things to do: create POSt API to post new data from user post
+  /// create GET APT that get information given the ID number
+  /// In firebase, user's favorite store recipe id to favorite collection, then use id to retrieve the entire information from google sheet.
+
+  ///
+  ///User post field
+  ///Title
+  ///
 
   void postMessage(context) {
     //Store in firebase
@@ -42,31 +52,40 @@ class addPost extends StatelessWidget {
           ),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color.fromRGBO(255, 226, 220, 0.68),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      // decoration: BoxDecoration(
+                      //   shape: BoxShape.circle,
+                      //   color: Color.fromRGBO(255, 226, 220, 0.68),
+                      // ),
+                      child: Icon(Icons.arrow_back_ios),
+                    ),
                   ),
-                  child: Icon(Icons.arrow_back),
-                ),
+                  Text('Add New Recipe'),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: textfield_login(
-                  controller: textController,
-                  hintText: 'Write your recipe...',
-                  obscureText: false,
-                ),
-              ),
-              login_button(
-                onTap: () => postMessage(context),
-                text: 'Post',
+                child: SingleChildScrollView(
+                    child: Column(
+                  children: [
+                    label_texfield(
+                      controller: textController,
+                      labelText: 'Write your recipe...',
+                    ),
+                    material_button(
+                      onTap: () => postMessage(context),
+                      text: 'Post',
+                    ),
+                  ],
+                )),
               ),
             ],
           ),

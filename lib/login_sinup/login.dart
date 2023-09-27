@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tomatoes/login_sinup/forgotPass.dart';
-import 'package:tomatoes/Components/login_button.dart';
+import 'package:tomatoes/Components/material_button.dart';
 import 'package:tomatoes/Components/textfield_login.dart';
 
 class login extends StatefulWidget {
@@ -162,7 +162,7 @@ class _loginState extends State<login> {
                       height: 20,
                     ),
                     //sign in button
-                    login_button(
+                    material_button(
                       onTap: logUserIn,
                       text: 'Log In',
                     ),

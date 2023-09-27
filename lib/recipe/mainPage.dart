@@ -54,8 +54,8 @@ class _mainPageState extends State<mainPage> {
                             borderRadius:
                                 BorderRadius.circular(thisSize.height * .3),
                             child:
-                                //                                 // userData['Image'] != ''
-                                //                                 //     ?
+                                // userData['Image'] != ''
+                                //     ?
                                 CachedNetworkImage(
                               width: thisSize.width * .15,
                               height: thisSize.width * .15,
@@ -82,19 +82,19 @@ class _mainPageState extends State<mainPage> {
                                 ),
                               ),
                             )
-                            //                             // : Container(
-                            //                             //     width: thisSize.height * .15,
-                            //                             //     height: thisSize.height * .15,
-                            //                             //     decoration: BoxDecoration(
-                            //                             //       color: Color(0xFFF83015),
-                            //                             //     ),
-                            //                             //     child: Icon(
-                            //                             //       Icons.person,
-                            //                             //       color: Colors.white,
-                            //                             //       size: thisSize.height * 0.1,
-                            //                             //     ),
-                            //                             //   ),
-                            //                             ),
+                            // : Container(
+                            //     width: thisSize.height * .15,
+                            //     height: thisSize.height * .15,
+                            //     decoration: BoxDecoration(
+                            //       color: Color(0xFFF83015),
+                            //     ),
+                            //     child: Icon(
+                            //       Icons.person,
+                            //       color: Colors.white,
+                            //       size: thisSize.height * 0.1,
+                            //     ),
+                            //   ),
+                            // ),
                             ),
                         SizedBox(
                           width: 10,
