@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/chatPage/messageClass.dart';
-import 'package:tomatoes/main.dart';
 import 'package:tomatoes/method/APIs.dart';
 import 'package:tomatoes/method/convertTime.dart';
 
@@ -40,16 +39,16 @@ class _messageCardState extends State<messageCard> {
       children: [
         Flexible(
           child: Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 8,
               horizontal: 15,
             ),
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               // left: 15,
               // right: 15,
               bottom: 10,
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xFFFFE2DC),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(25),
@@ -59,7 +58,7 @@ class _messageCardState extends State<messageCard> {
             ),
             child: Text(
               widget.message.msg,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black,
                 fontWeight: FontWeight.w500,
@@ -101,12 +100,12 @@ class _messageCardState extends State<messageCard> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Flexible(
           child: Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 8,
               horizontal: 15,
             ),
@@ -115,7 +114,7 @@ class _messageCardState extends State<messageCard> {
               // right: 15,
               bottom: 10,
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xFFF83015),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(25),
@@ -125,7 +124,7 @@ class _messageCardState extends State<messageCard> {
             ),
             child: Text(
               widget.message.msg,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,
                   fontWeight: FontWeight.w500),

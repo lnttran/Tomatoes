@@ -55,7 +55,7 @@ class _chatPageState extends State<chatPage> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back,
               color: Colors.black,
             ),
@@ -79,7 +79,7 @@ class _chatPageState extends State<chatPage> {
                   errorWidget: (context, url, error) => Container(
                     width: thisSize.height * .055,
                     height: thisSize.height * .055,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       //shape: BoxShape.circle,
                       color: Color(0xFFF83015),
                     ),
@@ -168,7 +168,7 @@ class _chatPageState extends State<chatPage> {
                                 );
                               });
                         } else {
-                          return Center(
+                          return const Center(
                               child: Text(
                             'Say hi!',
                             style: TextStyle(
@@ -197,7 +197,7 @@ class _chatPageState extends State<chatPage> {
         Expanded(
           child: Card(
             elevation: 0,
-            color: Color(0xFFFFE2DC),
+            color: const Color(0xFFFFE2DC),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
             ),
@@ -212,18 +212,18 @@ class _chatPageState extends State<chatPage> {
                         _showEmoji = !_showEmoji;
                       });
                     },
-                    child: Icon(Icons.emoji_emotions_outlined),
+                    child: const Icon(Icons.emoji_emotions_outlined),
                   ),
 
-                  //send  text message field
+                  //send text message field
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: TextField(
                         controller: textController,
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Text message',
                           hintStyle: TextStyle(
                             color: Colors.grey,
@@ -239,7 +239,7 @@ class _chatPageState extends State<chatPage> {
                   //attach file button
                   GestureDetector(
                     onTap: () {},
-                    child: Icon(Icons.attach_file_outlined),
+                    child: const Icon(Icons.attach_file_outlined),
                   ),
                   SizedBox(
                     width: 5,
@@ -254,7 +254,7 @@ class _chatPageState extends State<chatPage> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
         GestureDetector(
@@ -264,7 +264,7 @@ class _chatPageState extends State<chatPage> {
                 textController.clear(); // Clear the text input
               }
             },
-            child: Icon(Icons.send, color: Color(0xFFF83015))),
+            child: const Icon(Icons.send, color: Color(0xFFF83015))),
       ],
     );
   }

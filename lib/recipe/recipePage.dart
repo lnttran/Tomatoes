@@ -29,7 +29,7 @@ class _recipePageState extends State<recipePage> {
         controller: controller,
         recipe: widget.recipe,
       ),
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(25),
         topRight: Radius.circular(25),
       ),
@@ -55,12 +55,11 @@ class _recipePageState extends State<recipePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                color:
-                    Color(0xFFFFE2DC), // Set the background color of the button
-                shape: CircleBorder(), // Make the button circular
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(16.0), // Adjust padding as needed
+                color: const Color(
+                    0xFFFFE2DC), // Set the background color of the button
+                shape: const CircleBorder(), // Make the button circular
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0), // Adjust padding as needed
                   child: Icon(
                     Icons.arrow_back,
                     color: Colors.black, // Set the icon color
@@ -71,12 +70,11 @@ class _recipePageState extends State<recipePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                color:
-                    Color(0xFFFFE2DC), // Set the background color of the button
-                shape: CircleBorder(), // Make the button circular
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(16.0), // Adjust padding as needed
+                color: const Color(
+                    0xFFFFE2DC), // Set the background color of the button
+                shape: const CircleBorder(), // Make the button circular
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0), // Adjust padding as needed
                   child: Icon(
                     Icons.favorite_border_outlined,
                     color: Colors.black, // Set the icon color

@@ -21,7 +21,7 @@ class material_button extends StatelessWidget {
           horizontal: 20,
         ),
         decoration: BoxDecoration(
-          color: Color(0xFFF83015),
+          color: const Color(0xFFF83015),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(

@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
+import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/Components/userClass.dart';
 import 'package:tomatoes/chatPage/messageClass.dart';
 
@@ -185,9 +185,22 @@ class APIs {
     userClass? me = await initializeMe();
 
     if (me != null) {
-      //update image in firestore database
+      //update image in firestore databases
       final imageUrl = await ref.getDownloadURL();
       await sendMessage(chatUser, imageUrl, Type.image);
     }
+  }
+
+  static Future<void> uploadUserPost(Recipe recipe) async {
+    // final userPostClass newPost = userPostClass(
+    //   // recipe: recipe,
+    //   timeCreated: DateTime.now().millisecondsSinceEpoch.toString(),
+    // );
+
+    final ref = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currentUser!.email)
+        .collection('User Posts');
+    await ref.doc(recipe.id.toString()).set(recipe.toJson());
   }
 }

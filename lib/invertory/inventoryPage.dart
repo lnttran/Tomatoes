@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/invertory/ingreCard.dart';
-import 'package:tomatoes/recipe/recipeCard.dart';
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class inventoryPage extends StatefulWidget {
   const inventoryPage({super.key});
@@ -32,7 +34,7 @@ class _inventoryPageState extends State<inventoryPage> {
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: GestureDetector(
               onTap: () {},
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: Colors.black,
               ),
@@ -45,7 +47,7 @@ class _inventoryPageState extends State<inventoryPage> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -63,7 +65,7 @@ class _inventoryPageState extends State<inventoryPage> {
               ingredientCard(icon: Icon(Icons.egg), type: 'Beef'),
               ingredientCard(icon: Icon(Icons.egg), type: 'Chicken'),
               ingredientCard(icon: Icon(Icons.egg), type: 'Pork'),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -95,10 +97,10 @@ class _inventoryPageState extends State<inventoryPage> {
           width: 200,
           height: 50,
           child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: exportData,
               backgroundColor: Color(0xFFF83015),
               elevation: 10,
-              splashColor: Color.fromARGB(
+              splashColor: const Color.fromARGB(
                   255, 171, 0, 0), // Set the splash color when clicked
               highlightElevation:
                   8, // Set the elevation during click (higher than regular elevation)
@@ -112,7 +114,7 @@ class _inventoryPageState extends State<inventoryPage> {
                       'Find recipe',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward,
                       color: Colors.white,
                     )
@@ -122,5 +124,10 @@ class _inventoryPageState extends State<inventoryPage> {
         ),
       ),
     );
+  }
+
+  void exportData() {
+    final CollectionReference recipes =
+        FirebaseFirestore.instance.collection('Recipes');
   }
 }

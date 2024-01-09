@@ -1,11 +1,15 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tomatoes/Components/edit_button.dart';
+import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/homePage/addPost.dart';
-import 'package:tomatoes/homePage/userPost.dart';
+import 'package:tomatoes/homePage/userPostCard.dart';
 import 'package:tomatoes/method/APIs.dart';
+import 'package:tomatoes/method/convertTime.dart';
 import 'package:tomatoes/personal/edit_profile.dart';
 import 'package:tomatoes/personal/personal_drawer.dart';
 
@@ -38,6 +42,7 @@ class _Personal_PageState extends State<Personal_Page> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
+
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(
@@ -48,6 +53,7 @@ class _Personal_PageState extends State<Personal_Page> {
                 child: Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ClipRRect(
                           borderRadius:
@@ -67,37 +73,48 @@ class _Personal_PageState extends State<Personal_Page> {
                             errorWidget: (context, url, error) => Container(
                               width: thisSize.height * .075,
                               height: thisSize.height * .075,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 //shape: BoxShape.circle,
                                 color: Color(0xFFF83015),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.person,
                                 color: Colors.white,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: 15,
+                        StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('Users')
+                                .doc(currentUser.email)
+                                .collection('User Posts')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final posts = snapshot.data!.docs;
+                                return Column(children: [
+                                  Text('${posts.length}'),
+                                  const Text('Posts'),
+                                ]);
+                              }
+                              return const Column(children: [
+                                Text('0'),
+                                Text('Posts'),
+                              ]);
+                            }),
+                        const Column(children: [
+                          Text('Follower'),
+                        ]),
+                        const Column(children: [
+                          Text('Following'),
+                        ]),
+                        const SizedBox(
+                          width: 10,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(children: [
-                              Text('Post'),
-                            ]),
-                            Column(children: [
-                              Text('Follower'),
-                            ]),
-                            Column(children: [
-                              Text('Following'),
-                            ]),
-                          ],
-                        )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -107,7 +124,7 @@ class _Personal_PageState extends State<Personal_Page> {
                         )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Row(
@@ -133,29 +150,24 @@ class _Personal_PageState extends State<Personal_Page> {
                             text: 'Add recipe')
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
+                    //need to add ordered by the time so that the post will display the lastest user post
                     Expanded(
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(currentUser.email)
                             .collection('User Posts')
-                            .orderBy(
-                              'TimeStamp',
-                              descending: false,
-                            )
                             .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            final currentUserPosts = snapshot.data!.docs
-                                .where((currentUserPosts) =>
-                                    currentUserPosts['Email'] as String ==
-                                    currentUser.email)
-                                .toList();
+                            final currentUserPosts = snapshot.data!.docs;
 
                             if (currentUserPosts.isEmpty) {
                               // Return a message or placeholder when there are no user posts
-                              return Center(
+                              return const Center(
                                 child: Text("Upload your first recipe!"),
                               );
                             }
@@ -163,14 +175,14 @@ class _Personal_PageState extends State<Personal_Page> {
                             return ListView.builder(
                               itemCount: currentUserPosts.length,
                               itemBuilder: (context, index) {
-                                final post = currentUserPosts[index];
+                                final currentPost = currentUserPosts[index];
+                                final userEmail = currentUser.email ?? "";
                                 //Desplay the userPost if that post is made by the user
-                                return userPost(
-                                  recipe: post['Recipe'],
-                                  user: post['Email'],
-                                  postID: post.id,
-                                  likes: List<String>.from(post['Likes'] ?? []),
-                                );
+                                return userPostCard(
+                                    recipe:
+                                        Recipe.fromJsonPost(currentPost.data()),
+                                    postID: currentPost.id,
+                                    userEmail: userEmail);
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -179,9 +191,7 @@ class _Personal_PageState extends State<Personal_Page> {
                                   Text('Error: ' + snapshot.error.toString()),
                             );
                           }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return const SizedBox();
                         },
                       ),
                     ),

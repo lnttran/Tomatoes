@@ -46,6 +46,7 @@ class _favoritePageState extends State<favoritePage> {
                               child: recipeCard(
                                 recentlyView: false,
                                 recipe: recipe,
+                                isFave: true,
                               ),
                             ),
                           )

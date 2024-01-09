@@ -76,7 +76,7 @@ class _chatCardState extends State<chatCard> {
                   ),
                 ),
                 title: Text(
-                  widget.user.firstName + ' ' + widget.user.lastName,
+                  widget.user.username,
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w500,

@@ -7,13 +7,13 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Color(0xFFE9A494),
+      backgroundColor: const Color(0xFFFFE2DC),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         GestureDetector(
           onTap: () {
             FirebaseAuth.instance.signOut();
           },
-          child: ListTile(
+          child: const ListTile(
             leading: Icon(Icons.logout_outlined),
             title: Text('Log Out'),
           ),

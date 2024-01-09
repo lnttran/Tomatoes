@@ -35,6 +35,7 @@ dependencies:
   hive_flutter: ^1.1.0
   intl: ^0.18.1
   modal_bottom_sheet: ^2.1.2
+  csv: ^5.1.1
 
   #For sliding the card for more option
   flutter_slidable: ^3.0.0
@@ -44,6 +45,7 @@ dependencies:
 
   #Sliding up panel for recipe instruction 
   sliding_up_panel: ^2.0.0+1
+  flutter_sliding_up_panel: ^2.1.1
 
   # For access to firebase storage ( uploading files)
   firebase_storage: ^11.2.6
@@ -96,6 +98,7 @@ flutter:
     - assets/images/google.png
     - assets/images/startBG.jpg
     - assets/images/pizza.webp
+    - assets/recipeData/recipes_w_search_terms.csv
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/recipe/recipePage.dart';
-import 'package:tomatoes/recipe/recipePageTest.dart';
 
 class recipeCard extends StatefulWidget {
   final bool recentlyView;
   final Recipe recipe;
+  final bool isFave;
   const recipeCard({
     super.key,
     required this.recentlyView,
     required this.recipe,
+    required this.isFave,
   });
 
   @override
@@ -32,8 +32,8 @@ class _recipeCardState extends State<recipeCard> {
             ));
       },
       child: widget.recentlyView
-          ? _buildCardWithoutSlidable(context, true)
-          : _buildCardWithoutSlidable(context, false),
+          ? _buildCardWithoutSlidable(context, true, widget.isFave)
+          : _buildCardWithoutSlidable(context, false, widget.isFave),
     );
   }
 
@@ -84,12 +84,13 @@ class _recipeCardState extends State<recipeCard> {
   //   );
   // }
 
-  Container _buildCardWithoutSlidable(BuildContext context, bool recentlyV) {
+  Container _buildCardWithoutSlidable(
+      BuildContext context, bool recentlyV, bool isFav) {
     return Container(
         width: recentlyV ? thisSize.width * 0.85 : thisSize.width * 0.90,
         height: 200,
         decoration: BoxDecoration(
-          color: Color(0xFFFFE2DC), // Replace with your desired color
+          color: const Color(0xFFFFE2DC), // Replace with your desired color
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
@@ -149,7 +150,7 @@ class _recipeCardState extends State<recipeCard> {
                                 : thisSize.width * 0.21,
                             height: 30, // Adjust the height as needed
                             decoration: BoxDecoration(
-                              color: Color(
+                              color: const Color(
                                   0xFFFF998B), // Replace with your desired color
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -162,8 +163,10 @@ class _recipeCardState extends State<recipeCard> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(Icons.schedule_outlined),
-                                    Text('3 mins',
+                                    const Icon(Icons.schedule_outlined),
+                                    Text(
+                                        widget.recipe.timeSpend.toString() +
+                                            ' mins',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall),
@@ -179,7 +182,7 @@ class _recipeCardState extends State<recipeCard> {
                               : thisSize.width * 0.17,
                           height: 30, // Adjust the height as needed
                           decoration: BoxDecoration(
-                            color: Color(
+                            color: const Color(
                                 0xFFFFD703), // Replace with your desired color
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -195,12 +198,12 @@ class _recipeCardState extends State<recipeCard> {
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall),
-                                    Icon(Icons.star),
+                                    const Icon(Icons.star),
                                   ]),
                             ),
                           ),
                         ),
-                        Icon(Icons.favorite_border_outlined),
+                        if (isFav) const Icon(Icons.favorite_border_outlined),
                       ],
                     )
                   ],

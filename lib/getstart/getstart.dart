@@ -8,7 +8,7 @@ class getStart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/startBG.jpg'),
           fit: BoxFit.cover,
@@ -36,7 +36,7 @@ class getStart extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 300),
+            const SizedBox(height: 300),
             GestureDetector(
               onTap: () {
                 Navigator.push(

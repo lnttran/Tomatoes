@@ -4,9 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
-import 'package:tomatoes/personal/personal.dart';
 import 'package:tomatoes/recipe/recipeCard.dart';
-import 'package:http/http.dart' as http;
 import 'package:tomatoes/service/http_service.dart';
 
 class mainPage extends StatefulWidget {
@@ -16,7 +14,7 @@ class mainPage extends StatefulWidget {
   State<mainPage> createState() => _mainPageState();
 }
 
-enum tags {
+enum typeFilter {
   Main,
   Breakfast,
   Vegan,
@@ -34,7 +32,7 @@ class _mainPageState extends State<mainPage> {
   @override
   Widget build(BuildContext context) {
     //set to track the selected data
-    Set<tags> selectedTags = Set<tags>(); // To store selected tags
+    // Set<tags> selectedTags = Set<tags>(); // To store selected tags
     return SafeArea(
       child: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -169,61 +167,7 @@ class _mainPageState extends State<mainPage> {
                   ),
                 ),
               ),
-
-              /**
-               * Tags list 
-               */
-              SizedBox(
-                height: 70,
-                child: ListView.builder(
-                  itemCount: tags.values.length,
-                  scrollDirection: Axis.horizontal, // Scroll horizontally
-                  itemBuilder: (context, index) {
-                    final tag = tags.values[index];
-                    // Define text styles for selected and unselected states
-                    TextStyle selectedTextStyle = TextStyle(
-                      color: Colors.white, // Text color when selected
-                    );
-
-                    TextStyle unselectedTextStyle = TextStyle(
-                      color: Colors.black, // Text color when unselected
-                    );
-                    return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: FilterChip(
-                          label: Text(tag
-                              .toString()
-                              .split('.')
-                              .last), // Display the tag name
-                          selected: selectedTags.contains(tag),
-                          onSelected: (bool selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedTags.add(tag);
-                              } else {
-                                selectedTags.remove(tag);
-                              }
-                            });
-                          },
-                          backgroundColor: selectedTags.contains(tag)
-                              ? Color(
-                                  0xFFF83015) // Background color when selected
-                              : Color(
-                                  0xFFFFE2DC), // Background color when unselected
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                25.0), // Define the border radius
-                          ),
-                          labelStyle: TextStyle(
-                            color: selectedTags.contains(tag)
-                                ? Colors.white // Text color when selected
-                                : Colors.black, // Text color when unselected
-                          ),
-                        ));
-                  },
-                ),
-              ),
-
+              const FilterFoodType(),
               /**
                * Recently view section 
                */
@@ -260,6 +204,7 @@ class _mainPageState extends State<mainPage> {
                                 child: recipeCard(
                                   recentlyView: true,
                                   recipe: recipe,
+                                  isFave: true,
                                 ),
                               ),
                             )
@@ -320,6 +265,7 @@ class _mainPageState extends State<mainPage> {
                               child: recipeCard(
                                 recentlyView: false,
                                 recipe: recipe,
+                                isFave: true,
                               ),
                             ),
                           )
@@ -334,6 +280,58 @@ class _mainPageState extends State<mainPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class FilterFoodType extends StatefulWidget {
+  const FilterFoodType({super.key});
+  @override
+  State<FilterFoodType> createState() => _FilterFoodType();
+}
+
+class _FilterFoodType extends State<FilterFoodType> {
+  Set<typeFilter> selectedType = <typeFilter>{};
+
+  @override
+  Widget build(BuildContext context) {
+    // final TextTheme textTheme = Theme.of(context).textTheme;
+    return SizedBox(
+      height: 70,
+      child: ListView.builder(
+          itemCount: typeFilter.values.length,
+          scrollDirection: Axis.horizontal, // Scroll horizontally
+          itemBuilder: (context, index) {
+            final tag = typeFilter.values[index];
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FilterChip(
+                label: Text(tag.name),
+                selected: selectedType.contains(tag),
+                onSelected: (bool selected) {
+                  setState(() {
+                    if (selected) {
+                      selectedType.add(tag);
+                    } else {
+                      selectedType.remove(tag);
+                    }
+                  });
+                },
+                backgroundColor: const Color(0xFFFFE2DC),
+                selectedColor: const Color(0xFFF83015),
+                side: BorderSide.none,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(25.0), // Define the border radius
+                ),
+                labelStyle: TextStyle(
+                  color: selectedType.contains(tag)
+                      ? Colors.white // Text color when selected
+                      : Colors.black, // Text color when unselected
+                ),
+              ),
+            );
+          }),
     );
   }
 }

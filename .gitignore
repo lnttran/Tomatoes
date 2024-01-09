@@ -1,4 +1,6 @@
 # Miscellaneous
+
+assets/recipeData/recipes_w_search_terms.csv
 *.class
 *.log
 *.pyc
