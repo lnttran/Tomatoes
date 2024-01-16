@@ -56,16 +56,24 @@ class Recipe {
     };
   }
 
-  factory Recipe.fromJson(Map<String, dynamic> json) {
-    return Recipe(
-      id: json['id'] as int,
-      name: json['title'] as String,
-      description: json['description'] as String,
-      ingredients:
-          (json['ingredients'] as List).map((item) => item as String).toList(),
-      steps:
-          (json['instruction'] as List).map((item) => item as String).toList(),
-      thumbnail: json['thumbnail'] as String,
-    );
+  Recipe.fromJson(Map<String, dynamic> json) {
+    id = int.parse(json['id'].toString());
+    name = json['name'] as String;
+    description = json['description'] as String;
+    ingredients = (json['ingredients'] as List?)
+            ?.map((item) => item as String)
+            .toList() ??
+        [];
+    steps =
+        (json['steps'] as List?)?.map((item) => item as String).toList() ?? [];
+    thumbnail =
+        json.containsKey('thumbnail') ? json['thumbnail'] as String? ?? '' : '';
+    totalCal = double.tryParse(json['totalCal'].toString()) ?? 0.0;
+    timeSpend = json.containsKey('timeSpend')
+        ? int.parse(json['timeSpend'].toString())
+        : 0;
+    numOfServings = int.parse(json['servings'].toString());
+    likes =
+        (json['likes'] as List?)?.map((item) => item as String).toList() ?? [];
   }
 }

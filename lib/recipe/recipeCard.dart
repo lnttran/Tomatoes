@@ -86,131 +86,168 @@ class _recipeCardState extends State<recipeCard> {
 
   Container _buildCardWithoutSlidable(
       BuildContext context, bool recentlyV, bool isFav) {
+    final imageDecorationBuilder =
+        ImageDecorationBuilder(widget.recipe.thumbnail);
     return Container(
-        width: recentlyV ? thisSize.width * 0.85 : thisSize.width * 0.90,
-        height: 200,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFE2DC), // Replace with your desired color
-          borderRadius: BorderRadius.circular(25),
-        ),
-        child: Row(
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    width: thisSize.width * 0.35,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        //image: AssetImage('assets/images/startBG.jpg'),
-                        image: NetworkImage(widget.recipe.thumbnail),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
+      width: recentlyV ? thisSize.width * 0.85 : thisSize.width * 0.90,
+      height: 200,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFE2DC), // Replace with your desired color
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  width: thisSize.width * 0.35,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    image: imageDecorationBuilder.buildImageDecoration(),
+                    borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0), // Add padding for text
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.recipe.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(color: Colors.black),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(
-                        height:
-                            10), // Add space between the title and description
-                    Text(
-                      widget.recipe.description,
-                      style: Theme.of(context).textTheme.titleSmall,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(
-                        height:
-                            10), // Add space between the description and the row of containers
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                            width: recentlyV
-                                ? thisSize.width * 0.19
-                                : thisSize.width * 0.21,
-                            height: 30, // Adjust the height as needed
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                  0xFFFF998B), // Replace with your desired color
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: recentlyV ? 3.0 : 8.0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Icon(Icons.schedule_outlined),
-                                    Text(
-                                        widget.recipe.timeSpend.toString() +
-                                            ' mins',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall),
-                                  ],
-                                ),
-                              ),
-                            )),
-                        //SizedBox(width: 5), // Add space between the containers
-
-                        Container(
+              ),
+            ],
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0), // Add padding for text
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.recipe.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(color: Colors.black),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(
+                      height:
+                          10), // Add space between the title and description
+                  Text(
+                    widget.recipe.description,
+                    style: Theme.of(context).textTheme.titleSmall,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(
+                      height:
+                          10), // Add space between the description and the row of containers
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
                           width: recentlyV
-                              ? thisSize.width * 0.14
-                              : thisSize.width * 0.17,
+                              ? thisSize.width * 0.19
+                              : thisSize.width * 0.21,
                           height: 30, // Adjust the height as needed
                           decoration: BoxDecoration(
                             color: const Color(
-                                0xFFFFD703), // Replace with your desired color
+                                0xFFFF998B), // Replace with your desired color
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: recentlyV ? 7.0 : 10.0),
+                                horizontal: recentlyV ? 4.0 : 5.0,
+                              ),
                               child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('4.8',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall),
-                                    const Icon(Icons.star),
-                                  ]),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Icon(Icons.schedule_outlined),
+                                  Text('${widget.recipe.timeSpend} mins',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(fontSize: 13)),
+                                ],
+                              ),
                             ),
+                          )),
+                      //SizedBox(width: 5), // Add space between the containers
+
+                      Container(
+                        width: recentlyV
+                            ? thisSize.width * 0.14
+                            : thisSize.width * 0.17,
+                        height: 30, // Adjust the height as needed
+                        decoration: BoxDecoration(
+                          color: const Color(
+                              0xFFFFD703), // Replace with your desired color
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: recentlyV ? 7.0 : 13.0),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('4.8',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(fontSize: 13)),
+                                  const Icon(Icons.star),
+                                ]),
                           ),
                         ),
-                        if (isFav) const Icon(Icons.favorite_border_outlined),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                      if (isFav) const Icon(Icons.favorite_border_outlined),
+                    ],
+                  )
+                ],
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
+  }
+
+  // DecorationImage _buildImageDecoration() {
+  //   if (widget.recipe.thumbnail != null && widget.recipe.thumbnail.isNotEmpty) {
+  //     return DecorationImage(
+  //       image: NetworkImage(widget.recipe.thumbnail),
+  //       fit: BoxFit.cover,
+  //     );
+  //   } else {
+  //     // Handle the case when thumbnail is null or empty
+  //     return const DecorationImage(
+  //       // Show an existing image when thumbnail is null or empty
+  //       image: AssetImage('assets/images/startBG.jpg'),
+  //       fit: BoxFit.cover,
+  //     );
+  //   }
+  // }
+}
+
+class ImageDecorationBuilder {
+  final String imageUrl;
+
+  ImageDecorationBuilder(this.imageUrl);
+
+  DecorationImage buildImageDecoration() {
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return DecorationImage(
+        image: NetworkImage(imageUrl),
+        fit: BoxFit.cover,
+      );
+    } else {
+      // Handle the case when thumbnail is null or empty
+      return const DecorationImage(
+        // Show an existing image when thumbnail is null or empty
+        image: AssetImage('assets/images/startBG.jpg'),
+        fit: BoxFit.cover,
+      );
+    }
   }
 }

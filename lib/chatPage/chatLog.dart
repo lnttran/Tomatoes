@@ -3,9 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/Components/userClass.dart';
 import 'package:tomatoes/chatPage/chatCart.dart';
-import 'dart:developer' as developer;
-
-import 'package:tomatoes/chatPage/chatPage.dart';
 import 'package:tomatoes/main.dart';
 
 class chatLog extends StatefulWidget {
@@ -17,10 +14,29 @@ class chatLog extends StatefulWidget {
 
 class _chatLogState extends State<chatLog> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+  bool isTextFieldFocused = false;
   List<userClass> list = [];
-  //storing search item
-  List<userClass> _searchList = [];
-  bool isSearch = false;
+  final List<userClass> _searchList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        isTextFieldFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -32,8 +48,8 @@ class _chatLogState extends State<chatLog> {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
-                  isSearch
-                      ? SizedBox(
+                  isTextFieldFocused
+                      ? const SizedBox(
                           height: 1,
                         )
                       : Row(
@@ -47,7 +63,7 @@ class _chatLogState extends State<chatLog> {
                               onTap: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Icon(
+                              child: const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 size: 30,
                                 color: Colors.black,
@@ -55,113 +71,83 @@ class _chatLogState extends State<chatLog> {
                             ),
                           ],
                         ),
-                  SizedBox(
+                  const SizedBox(
                     height: 18,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isSearch = !isSearch;
-                      });
-                    },
-                    child: isSearch
-                        ? Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: Colors.grey,
-                                    ),
-                                    hintText: 'Search',
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(color: Colors.grey),
-                                    filled: true,
-                                    fillColor: Color(0xFFFFE2DC),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 15),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        borderSide:
-                                            BorderSide(color: Colors.white)),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                      borderSide: BorderSide(
-                                        color: Color(
-                                            0xFFF83015), // Set the color for the focused border line
-                                        width:
-                                            2, // Set the thickness for the focused border line
-                                      ),
-                                    ),
-                                  ),
-                                  //when search text changes then updated search list
-                                  onChanged: (value) {
-                                    _searchList.clear();
-
-                                    for (var i in list) {
-                                      if (i.firstName
-                                              .toLowerCase()
-                                              .contains(value.toLowerCase()) ||
-                                          i.lastName
-                                              .toLowerCase()
-                                              .contains(value.toLowerCase()) ||
-                                          i.username
-                                              .toLowerCase()
-                                              .contains(value.toLowerCase())) {
-                                        _searchList.add(i);
-                                      }
-                                      setState(() {
-                                        _searchList;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isSearch = !isSearch;
-                                  });
-                                },
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: Color(0xFFF83015),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        : Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.all(15),
-                            width: thisSize.width,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFFFE2DC),
-                              borderRadius: BorderRadius.circular(15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          focusNode: _focusNode,
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.grey,
                             ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.search,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Search',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                            hintText: 'Search',
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(color: Colors.grey),
+                            filled: true,
+                            fillColor: const Color(0xFFFFE2DC),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 15),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide:
+                                    const BorderSide(color: Colors.white)),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                color: Color(
+                                    0xFFF83015), // Set the color for the focused border line
+                                width:
+                                    2, // Set the thickness for the focused border line
+                              ),
                             ),
                           ),
+                          //when search text changes then updated search list
+                          onChanged: (value) {
+                            _searchList.clear();
+
+                            for (var i in list) {
+                              if (i.firstName
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  i.lastName
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  i.username
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase())) {
+                                _searchList.add(i);
+                              }
+                              setState(() {
+                                _searchList;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      if (isTextFieldFocused)
+                        TextButton(
+                          onPressed: () {
+                            _focusNode.unfocus();
+                            _searchList.clear();
+                            _searchController.clear();
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Color(0xFFF83015),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Expanded(
@@ -193,18 +179,18 @@ class _chatLogState extends State<chatLog> {
                               return ListView.builder(
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  itemCount: isSearch
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: isTextFieldFocused
                                       ? _searchList.length
                                       : list.length,
                                   itemBuilder: (context, index) {
                                     return chatCard(
-                                        user: isSearch
+                                        user: isTextFieldFocused
                                             ? _searchList[index]
                                             : list[index]);
                                   });
                             } else {
-                              return Center(
+                              return const Center(
                                   child: Text(
                                 'No Connections Found',
                                 style: TextStyle(

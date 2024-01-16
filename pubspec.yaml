@@ -36,6 +36,7 @@ dependencies:
   intl: ^0.18.1
   modal_bottom_sheet: ^2.1.2
   csv: ^5.1.1
+  easy_search_bar: ^2.5.0
 
   #For sliding the card for more option
   flutter_slidable: ^3.0.0
@@ -49,7 +50,7 @@ dependencies:
 
   # For access to firebase storage ( uploading files)
   firebase_storage: ^11.2.6
-
+  
 
   
 
@@ -64,7 +65,7 @@ dependencies:
   firebase_core: ^2.15.1
   firebase_auth: ^4.7.3
   cloud_firestore: ^4.8.5
-  cached_network_image: ^3.2.3
+  cached_network_image: ^3.3.1
   image_picker: ^1.0.2
   image_cropper: ^5.0.0
   http: ^1.1.0

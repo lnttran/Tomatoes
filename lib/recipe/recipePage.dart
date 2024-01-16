@@ -3,6 +3,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/recipe/PanelWidget.dart';
+import 'package:tomatoes/recipe/recipeCard.dart';
 
 class recipePage extends StatefulWidget {
   final Recipe recipe;
@@ -37,15 +38,13 @@ class _recipePageState extends State<recipePage> {
   }
 
   Stack _body(BuildContext context) {
+    final imageDecorationBuilder =
+        ImageDecorationBuilder(widget.recipe.thumbnail);
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(widget.recipe.thumbnail),
-              fit: BoxFit.cover,
-            ),
-          ),
+              image: imageDecorationBuilder.buildImageDecoration()),
         ),
         SafeArea(
           child: Row(

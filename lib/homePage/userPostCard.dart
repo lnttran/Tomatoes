@@ -116,7 +116,7 @@ class _userPostCardState extends State<userPostCard> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 recipeCard(
                     recentlyView: false, recipe: widget.recipe, isFave: false),

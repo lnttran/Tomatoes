@@ -23,15 +23,15 @@ class _panelWidgetState extends State<panelWidget> {
       child: ListView(
         children: [
           _dragHandle(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _heading(context),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _ingredientList(context),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _instruction(context),
@@ -73,11 +73,11 @@ class _panelWidgetState extends State<panelWidget> {
             ),
             Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 49,
                 ),
                 Text(
-                  '3.8',
+                  '${widget.recipe.likes.length}',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontSize: 23,
                       ),
@@ -94,12 +94,12 @@ class _panelWidgetState extends State<panelWidget> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Text(widget.recipe.description,
             style: Theme.of(context).textTheme.bodyMedium),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Row(
@@ -107,15 +107,16 @@ class _panelWidgetState extends State<panelWidget> {
           children: [
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.schedule_outlined,
                   size: 30,
                   color: Color(0xFFF83015),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
-                Text('30 mins', style: Theme.of(context).textTheme.bodyMedium),
+                Text('${widget.recipe.timeSpend} mins',
+                    style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
             Row(
@@ -129,22 +130,22 @@ class _panelWidgetState extends State<panelWidget> {
                   width: 8,
                 ),
                 Text(
-                  '270 calories',
+                  '${widget.recipe.totalCal} calories',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.restaurant_outlined,
                   size: 30,
                   color: Color(0xFFF83015),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
-                Text('2 servings',
+                Text('${widget.recipe.numOfServings} servings',
                     style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
@@ -160,7 +161,8 @@ class _panelWidgetState extends State<panelWidget> {
 
     return Container(
       decoration: BoxDecoration(
-          color: Color(0xFFFFE2DC), borderRadius: BorderRadius.circular(25)),
+          color: const Color(0xFFFFE2DC),
+          borderRadius: BorderRadius.circular(25)),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -178,8 +180,8 @@ class _panelWidgetState extends State<panelWidget> {
             ),
             GridView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 6, // Adjust the aspect ratio as needed
               ),
@@ -205,7 +207,7 @@ class _panelWidgetState extends State<panelWidget> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFFFFE2DC),
+        color: const Color(0xFFFFE2DC),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Padding(

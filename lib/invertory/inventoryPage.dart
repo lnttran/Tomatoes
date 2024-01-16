@@ -97,7 +97,7 @@ class _inventoryPageState extends State<inventoryPage> {
           width: 200,
           height: 50,
           child: FloatingActionButton(
-              onPressed: exportData,
+              onPressed: () {},
               backgroundColor: Color(0xFFF83015),
               elevation: 10,
               splashColor: const Color.fromARGB(
@@ -126,8 +126,47 @@ class _inventoryPageState extends State<inventoryPage> {
     );
   }
 
-  void exportData() {
+  void exportData() async {
     final CollectionReference recipes =
         FirebaseFirestore.instance.collection('Recipes');
+    final csvString = await rootBundle
+        .loadString("assets/recipeData/recipes_w_search_terms.csv");
+
+    // The CsvToListConverter is not handling multiline values properly.
+    // Use the csv.decode method from the csv package to handle multiline values correctly.
+    List<List<dynamic>> data =
+        const CsvToListConverter(eol: '\n').convert(csvString);
+
+    for (var i = 6; i < 500; i++) {
+      Map<String, dynamic> recipe = {
+        "id": data[i][0].toString(),
+        "name": data[i][1].toString(),
+        "description": data[i][2].toString(),
+        "ingredients": (data[i][3] as String)
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(', '),
+        "ingredients_raw_str": (data[i][4] as String)
+            .replaceAll('["', '')
+            .replaceAll('"]', '')
+            .split('","'),
+        "serving_size": data[i][5].toString(),
+        "servings": int.parse(data[i][6].toString()),
+        "steps": (data[i][7] as String)
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
+        "tags": (data[i][8] as String)
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
+        "search_terms": (data[i][9] as String)
+            .replaceAll('{', '')
+            .replaceAll('}', '')
+            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
+      };
+
+      recipes.add(recipe);
+    }
   }
 }
