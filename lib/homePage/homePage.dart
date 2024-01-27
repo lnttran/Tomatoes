@@ -120,7 +120,7 @@ class _homePageState extends State<homePage> {
                                           recipe: Recipe.fromJsonPost(
                                               currentPost.data()),
                                           postID: currentPost.id,
-                                          userEmail: userData['Email']));
+                                          userUid: userData['Uid']));
                                 } else if (snapshot.hasError) {
                                   return Center(
                                     child: Text(

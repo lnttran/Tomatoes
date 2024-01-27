@@ -178,24 +178,37 @@ class _panelWidgetState extends State<panelWidget> {
                 ),
               ],
             ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 6, // Adjust the aspect ratio as needed
-              ),
-              itemCount: ingredients.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Text(
-                    '${index + 1}. ' + ingredients[index],
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                );
-              },
-            ),
+            // GridView.builder(
+            //   shrinkWrap: true,
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            //     crossAxisCount: 2,
+            //     childAspectRatio: 6, // Adjust the aspect ratio as needed
+            //   ),
+            //   itemCount: ingredients.length,
+            //   itemBuilder: (BuildContext context, int index) {
+            //     return Padding(
+            //       padding: const EdgeInsets.all(5.0),
+            //       child: Text(
+            //         '${index + 1}. ' + ingredients[index],
+            //         style: Theme.of(context).textTheme.bodyMedium,
+            //       ),
+            //     );
+            //   },
+            // ),
+            ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: ingredients.length,
+                itemBuilder: ((context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      '${index + 1}. ' + ingredients[index],
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  );
+                }))
           ],
         ),
       ),

@@ -64,11 +64,11 @@ class _chatCardState extends State<chatCard> {
                     errorWidget: (context, url, error) => Container(
                       width: thisSize.height * .055,
                       height: thisSize.height * .055,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         //shape: BoxShape.circle,
                         color: Color(0xFFF83015),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.person,
                         color: Colors.white,
                       ),
@@ -77,7 +77,7 @@ class _chatCardState extends State<chatCard> {
                 ),
                 title: Text(
                   widget.user.username,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
@@ -98,7 +98,7 @@ class _chatCardState extends State<chatCard> {
                             width: 13,
                             height: 13,
                             decoration: BoxDecoration(
-                                color: Color(0xFFF83015),
+                                color: const Color(0xFFF83015),
                                 borderRadius: BorderRadius.circular(10)),
                           )
                         : Text(MyDateUtil.getLastMessageTime(

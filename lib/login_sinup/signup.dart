@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tomatoes/Components/bottom_bar.dart';
 import 'package:tomatoes/Components/textfield_login.dart';
 import 'package:tomatoes/Components/material_button.dart';
-import 'package:tomatoes/method/convertTime.dart';
 import 'package:tomatoes/Components/userClass.dart';
 
 //import '../../service/auth_sersice.dart';
@@ -30,22 +27,22 @@ class _signupState extends State<signup> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // @override
-  // void dispose() {
-  //   emailController.dispose();
-  //   confirmPasswordController.dispose();
-  //   firstNameController.dispose();
-  //   lastNameController.dispose();
-  //   usernameController.dispose();
-  //   passwordController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    emailController.dispose();
+    confirmPasswordController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void SignUserUp() async {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
+        return const Dialog(
           backgroundColor: Colors.transparent,
           // Make the dialog transparent
           child: Center(
@@ -77,13 +74,17 @@ class _signupState extends State<signup> {
           email: emailController.text.trim(),
           pushToken: '',
           id: userCredential.user!.uid,
+          recentlyView: [],
+          followers: [],
+          followings: [],
+          favoriteRecipe: [],
         );
 
         final userData = user.toJson();
 
         FirebaseFirestore.instance
             .collection('Users')
-            .doc(userCredential.user!.email)
+            .doc(userCredential.user!.uid)
             .set(userData);
       } else {
         wrongAlert('Password Does\'t Match');
@@ -110,7 +111,7 @@ class _signupState extends State<signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF211B25),
+        backgroundColor: const Color(0xFF211B25),
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -127,7 +128,7 @@ class _signupState extends State<signup> {
                             style: Theme.of(context).textTheme.titleLarge),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Text(
@@ -137,7 +138,7 @@ class _signupState extends State<signup> {
                                 color: Colors.white,
                               ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -148,7 +149,7 @@ class _signupState extends State<signup> {
                       obscureText: false,
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -159,7 +160,7 @@ class _signupState extends State<signup> {
                       obscureText: false,
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -170,7 +171,7 @@ class _signupState extends State<signup> {
                       obscureText: false,
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -181,7 +182,7 @@ class _signupState extends State<signup> {
                       obscureText: false,
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -191,7 +192,7 @@ class _signupState extends State<signup> {
                       hintText: 'Password',
                       obscureText: true,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -201,7 +202,7 @@ class _signupState extends State<signup> {
                       hintText: 'Confirm Passowrd',
                       obscureText: true,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     //sign in button
@@ -209,12 +210,12 @@ class _signupState extends State<signup> {
                       onTap: SignUserUp,
                       text: 'Sign Up',
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             thickness: 0.5,
                             color: Color.fromARGB(255, 241, 223, 249),
@@ -232,7 +233,7 @@ class _signupState extends State<signup> {
                                 ),
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             thickness: 0.5,
                             color: Color.fromARGB(255, 241, 223, 249),
@@ -240,11 +241,11 @@ class _signupState extends State<signup> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     alterative(),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Row(

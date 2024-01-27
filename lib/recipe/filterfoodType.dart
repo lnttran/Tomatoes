@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:tomatoes/Components/typeFilter.dart';
 
-enum typeFilter {
-  Main,
-  Breakfast,
-  Vegan,
-  All,
-  Soup,
-  Beef,
-  Japeneses,
-}
+// enum typeFilter {
+//   occasion,
+//   healthy,
+//   appetizers,
+// }
 
 class FilterFoodType extends StatefulWidget {
-  const FilterFoodType({super.key});
+  final void Function(Set<TypeFilter> selectedTypes)? onSelectedTypeChange;
+  const FilterFoodType({super.key, this.onSelectedTypeChange});
   @override
   State<FilterFoodType> createState() => _FilterFoodType();
+  Set<TypeFilter> getSelectedType() {
+    return _FilterFoodType().selectedType;
+  }
 }
 
 class _FilterFoodType extends State<FilterFoodType> {
-  Set<typeFilter> selectedType = <typeFilter>{};
+  Set<TypeFilter> selectedType = <TypeFilter>{};
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +26,10 @@ class _FilterFoodType extends State<FilterFoodType> {
     return SizedBox(
       height: 70,
       child: ListView.builder(
-          itemCount: typeFilter.values.length,
+          itemCount: TypeFilterStorage.filters.length,
           scrollDirection: Axis.horizontal, // Scroll horizontally
           itemBuilder: (context, index) {
-            final tag = typeFilter.values[index];
+            final tag = TypeFilterStorage.filters[index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: FilterChip(
@@ -42,6 +43,9 @@ class _FilterFoodType extends State<FilterFoodType> {
                       selectedType.remove(tag);
                     }
                   });
+                  if (widget.onSelectedTypeChange != null) {
+                    widget.onSelectedTypeChange!(selectedType);
+                  }
                 },
                 backgroundColor: const Color(0xFFFFE2DC),
                 selectedColor: const Color(0xFFF83015),

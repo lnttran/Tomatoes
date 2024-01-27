@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tomatoes/invertory/addIngredient.dart';
 import 'package:tomatoes/invertory/ingreCard.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:tomatoes/invertory/ingredientsClass.dart';
+import 'package:tomatoes/method/APIs.dart';
 
 class inventoryPage extends StatefulWidget {
   const inventoryPage({super.key});
@@ -12,6 +16,11 @@ class inventoryPage extends StatefulWidget {
 }
 
 class _inventoryPageState extends State<inventoryPage> {
+  final currentUser = FirebaseAuth.instance.currentUser!;
+  String capitalizeFirstLetter(String text) {
+    return text.isNotEmpty ? text[0].toUpperCase() + text.substring(1) : text;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +42,14 @@ class _inventoryPageState extends State<inventoryPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => addIngredient(),
+                      // builder: (context) => const TestPage2(),
+                    ));
+              },
               child: const Icon(
                 Icons.add,
                 color: Colors.black,
@@ -43,49 +59,77 @@ class _inventoryPageState extends State<inventoryPage> {
         ],
       ),
       body: SingleChildScrollView(
+        physics: const ScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Protein',
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.black,
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('Users')
+                .doc(currentUser.uid)
+                .collection('Available Ingredients')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final ingredients = snapshot.data!.docs;
+                Map<String, Map<String, IngredientClass>> ingredientList = {};
+                Map<String, IngredientClass> thisIngredient = {};
+                if (ingredients.isNotEmpty) {
+                  for (var ingredient in ingredients) {
+                    Map<String, dynamic> ingredientData = ingredient.data();
+
+                    String category = ingredientData['category'];
+                    String name = ingredientData['name'];
+
+                    // Create a new inner map if the category is not already present
+                    if (!ingredientList.containsKey(category)) {
+                      ingredientList[category] = {};
+                    }
+
+                    // Add the ingredient to the inner map
+                    ingredientList[category]![name] =
+                        IngredientClass.fromJson(ingredientData);
+                  }
+                }
+                return Column(
+                  children: ingredientList.entries.map((entry) {
+                    Map<String, IngredientClass> ingredients = entry.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          capitalizeFirstLetter(entry.key),
+                          textAlign: TextAlign.start,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.black,
+                                  ),
                         ),
-                  ),
-                ],
-              ),
-              ingredientCard(icon: Icon(Icons.egg), type: 'Egg'),
-              ingredientCard(icon: Icon(Icons.egg), type: 'Beef'),
-              ingredientCard(icon: Icon(Icons.egg), type: 'Chicken'),
-              ingredientCard(icon: Icon(Icons.egg), type: 'Pork'),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Vegetables',
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.black,
-                        ),
-                  ),
-                ],
-              ),
-              ingredientCard(icon: Icon(Icons.bakery_dining), type: 'Lettuce'),
-              ingredientCard(icon: Icon(Icons.rice_bowl), type: 'Tomato'),
-              ingredientCard(icon: Icon(Icons.bakery_dining), type: 'Lettuce'),
-              ingredientCard(icon: Icon(Icons.rice_bowl), type: 'Tomato'),
-              ingredientCard(icon: Icon(Icons.bakery_dining), type: 'Lettuce'),
-              ingredientCard(icon: Icon(Icons.rice_bowl), type: 'Tomato'),
-            ],
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: ingredients.length,
+                            itemBuilder: (context, index) {
+                              String ingredientName =
+                                  ingredients.keys.elementAt(index);
+                              IngredientClass ingredient =
+                                  ingredients[ingredientName]!;
+
+                              return ingredientCard(
+                                  onDelete: () =>
+                                      APIs.deleteIngredient(ingredient.name),
+                                  ingredient: ingredient);
+                            })
+                      ],
+                    );
+                  }).toList(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
         ),
       ),
@@ -97,8 +141,10 @@ class _inventoryPageState extends State<inventoryPage> {
           width: 200,
           height: 50,
           child: FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Color(0xFFF83015),
+              onPressed: () {
+                // Call the exportData function here
+              },
+              backgroundColor: const Color(0xFFF83015),
               elevation: 10,
               splashColor: const Color.fromARGB(
                   255, 171, 0, 0), // Set the splash color when clicked
@@ -126,47 +172,61 @@ class _inventoryPageState extends State<inventoryPage> {
     );
   }
 
-  void exportData() async {
-    final CollectionReference recipes =
-        FirebaseFirestore.instance.collection('Recipes');
-    final csvString = await rootBundle
-        .loadString("assets/recipeData/recipes_w_search_terms.csv");
+  // void exportData() async {
+  //   final CollectionReference recipes =
+  //       FirebaseFirestore.instance.collection('Recipes');
+  //   final csvString = await rootBundle
+  //       .loadString("assets/recipeData/recipes_w_search_terms.csv");
 
-    // The CsvToListConverter is not handling multiline values properly.
-    // Use the csv.decode method from the csv package to handle multiline values correctly.
-    List<List<dynamic>> data =
-        const CsvToListConverter(eol: '\n').convert(csvString);
+  //   // The CsvToListConverter is not handling multiline values properly.
+  //   // Use the csv.decode method from the csv package to handle multiline values correctly.
+  //   List<List<dynamic>> data =
+  //       const CsvToListConverter(eol: '\n').convert(csvString);
 
-    for (var i = 6; i < 500; i++) {
-      Map<String, dynamic> recipe = {
-        "id": data[i][0].toString(),
-        "name": data[i][1].toString(),
-        "description": data[i][2].toString(),
-        "ingredients": (data[i][3] as String)
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(', '),
-        "ingredients_raw_str": (data[i][4] as String)
-            .replaceAll('["', '')
-            .replaceAll('"]', '')
-            .split('","'),
-        "serving_size": data[i][5].toString(),
-        "servings": int.parse(data[i][6].toString()),
-        "steps": (data[i][7] as String)
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
-        "tags": (data[i][8] as String)
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
-        "search_terms": (data[i][9] as String)
-            .replaceAll('{', '')
-            .replaceAll('}', '')
-            .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)")),
-      };
+  //   for (var i = 1; i < 500; i++) {
+  //     Map<String, dynamic> recipe = {
+  //       "id": data[i][0].toString(),
+  //       "name": data[i][1].toString(),
+  //       "description": data[i][2].toString(),
+  //       "ingredients": (data[i][3] as String)
+  //           .replaceAll('[', '')
+  //           .replaceAll(']', '')
+  //           .replaceAll('\'', '')
+  //           .split(', '),
+  //       "ingredients_raw_str": (data[i][4] as String)
+  //           .replaceAll('["', '')
+  //           .replaceAll('"]', '')
+  //           .split('","'),
+  //       "serving_size": data[i][5].toString(),
+  //       "servings": int.parse(data[i][6].toString()),
+  //       "steps": (data[i][7] as String)
+  //           .replaceAll('[', '')
+  //           .replaceAll(']', '')
+  //           .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)"))
+  //           .map((step) => step
+  //               .replaceAll('\'', '')
+  //               .trim()) // Remove single quotation marks and trim each step
+  //           .toList(),
+  //       "tags": (data[i][8] as String)
+  //           .replaceAll('[', '')
+  //           .replaceAll(']', '')
+  //           .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)"))
+  //           .map((step) => step
+  //               .replaceAll('\'', '')
+  //               .replaceAll('-', ' ')
+  //               .trim()) // Remove single quotation marks and trim each step
+  //           .toList(),
+  //       "search_terms": (data[i][9] as String)
+  //           .replaceAll('{', '')
+  //           .replaceAll('}', '')
+  //           .split(RegExp(r"\s*,\s*(?=(?:[^']*'[^']*')*[^']*$)"))
+  //           .map((step) => step
+  //               .replaceAll('\'', '')
+  //               .trim()) // Remove single quotation marks and trim each step
+  //           .toList(),
+  //     };
 
-      recipes.add(recipe);
-    }
-  }
+  //     recipes.add(recipe);
+  //   }
+  // }
 }

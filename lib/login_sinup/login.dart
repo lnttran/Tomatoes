@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tomatoes/login_sinup/forgotPass.dart';
 import 'package:tomatoes/Components/material_button.dart';
 import 'package:tomatoes/Components/textfield_login.dart';
@@ -26,7 +24,7 @@ class _loginState extends State<login> {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
+        return const Dialog(
           backgroundColor: Colors.transparent,
           // Make the dialog transparent
           child: Center(
@@ -45,7 +43,7 @@ class _loginState extends State<login> {
 
       FirebaseFirestore.instance
           .collection('Users')
-          .doc(userCredential.user!.email)
+          .doc(userCredential.user!.uid)
           .set({
         'Email': emailController.text.trim(),
         'Uid': userCredential.user!.uid,
@@ -77,7 +75,7 @@ class _loginState extends State<login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF211B25),
+        backgroundColor: const Color(0xFF211B25),
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -95,7 +93,7 @@ class _loginState extends State<login> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Text(
@@ -105,7 +103,7 @@ class _loginState extends State<login> {
                                 color: Colors.white,
                               ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -116,7 +114,7 @@ class _loginState extends State<login> {
                       obscureText: false,
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -126,7 +124,7 @@ class _loginState extends State<login> {
                       hintText: 'Password',
                       obscureText: true,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
@@ -140,7 +138,7 @@ class _loginState extends State<login> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return forgotPassword();
+                                  return const forgotPassword();
                                 },
                               ),
                             );
@@ -158,7 +156,7 @@ class _loginState extends State<login> {
                       ],
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     //sign in button
@@ -166,12 +164,12 @@ class _loginState extends State<login> {
                       onTap: logUserIn,
                       text: 'Log In',
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             thickness: 0.5,
                             color: Color.fromARGB(255, 241, 223, 249),
@@ -189,7 +187,7 @@ class _loginState extends State<login> {
                                 ),
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             thickness: 0.5,
                             color: Color.fromARGB(255, 241, 223, 249),
@@ -197,11 +195,11 @@ class _loginState extends State<login> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     alterative(),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Row(
@@ -213,7 +211,7 @@ class _loginState extends State<login> {
                               .textTheme
                               .headlineSmall
                               ?.copyWith(
-                                color: Color.fromARGB(255, 241, 223, 249),
+                                color: const Color.fromARGB(255, 241, 223, 249),
                               ),
                         ),
                         GestureDetector(
@@ -224,7 +222,8 @@ class _loginState extends State<login> {
                                 .textTheme
                                 .headlineSmall
                                 ?.copyWith(
-                                  color: Color.fromARGB(255, 223, 189, 186),
+                                  color:
+                                      const Color.fromARGB(255, 223, 189, 186),
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),

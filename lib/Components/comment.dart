@@ -6,13 +6,13 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Comment extends StatefulWidget {
   final String text;
-  final String userEmail;
+  final String userUid;
   final String time;
   final Function()? onPressed;
   const Comment({
     super.key,
     required this.text,
-    required this.userEmail,
+    required this.userUid,
     required this.time,
     required this.onPressed,
   });
@@ -27,7 +27,7 @@ class _CommentState extends State<Comment> {
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('Users')
-            .doc(widget.userEmail)
+            .doc(widget.userUid)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {

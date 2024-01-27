@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +6,6 @@ import 'package:tomatoes/Components/edit_button.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/homePage/addPost.dart';
 import 'package:tomatoes/homePage/userPostCard.dart';
-import 'package:tomatoes/method/APIs.dart';
-import 'package:tomatoes/method/convertTime.dart';
 import 'package:tomatoes/personal/edit_profile.dart';
 import 'package:tomatoes/personal/personal_drawer.dart';
 
@@ -38,10 +34,13 @@ class _Personal_PageState extends State<Personal_Page> {
       endDrawer: const MyDrawer(),
       body: StreamBuilder<DocumentSnapshot>(
         //geting the information of Users->widget.user.email
-        stream: userCollection.doc(currentUser.email).snapshots(),
+        stream: userCollection.doc(currentUser.uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
+            int followersLength = (userData['Followers'] as List?)?.length ?? 0;
+            int followingsLength =
+                (userData['Followings'] as List?)?.length ?? 0;
 
             return SafeArea(
               child: Padding(
@@ -87,27 +86,39 @@ class _Personal_PageState extends State<Personal_Page> {
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection('Users')
-                                .doc(currentUser.email)
+                                .doc(currentUser.uid)
                                 .collection('User Posts')
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final posts = snapshot.data!.docs;
-                                return Column(children: [
-                                  Text('${posts.length}'),
-                                  const Text('Posts'),
-                                ]);
+                                return Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text('${posts.length}'),
+                                        Text(posts.isNotEmpty
+                                            ? 'Posts'
+                                            : 'Post'),
+                                      ],
+                                    ),
+                                  ],
+                                );
                               }
                               return const Column(children: [
                                 Text('0'),
-                                Text('Posts'),
+                                Text('Post'),
                               ]);
                             }),
-                        const Column(children: [
-                          Text('Follower'),
+                        Column(children: [
+                          Text('$followersLength'),
+                          Text(followersLength > 0 ? 'Followers' : 'Follower'),
                         ]),
-                        const Column(children: [
-                          Text('Following'),
+                        Column(children: [
+                          Text('$followingsLength'),
+                          Text(followingsLength > 0
+                              ? 'Followings'
+                              : 'Following'),
                         ]),
                         const SizedBox(
                           width: 10,
@@ -158,7 +169,7 @@ class _Personal_PageState extends State<Personal_Page> {
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('Users')
-                            .doc(currentUser.email)
+                            .doc(currentUser.uid)
                             .collection('User Posts')
                             .snapshots(),
                         builder: (context, snapshot) {
@@ -176,13 +187,13 @@ class _Personal_PageState extends State<Personal_Page> {
                               itemCount: currentUserPosts.length,
                               itemBuilder: (context, index) {
                                 final currentPost = currentUserPosts[index];
-                                final userEmail = currentUser.email ?? "";
+                                final userUid = currentUser.uid;
                                 //Desplay the userPost if that post is made by the user
                                 return userPostCard(
                                     recipe:
                                         Recipe.fromJsonPost(currentPost.data()),
                                     postID: currentPost.id,
-                                    userEmail: userEmail);
+                                    userUid: userUid);
                               },
                             );
                           } else if (snapshot.hasError) {

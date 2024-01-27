@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tomatoes/Components/like_button.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/recipe/recipePage.dart';
@@ -7,11 +10,15 @@ class recipeCard extends StatefulWidget {
   final bool recentlyView;
   final Recipe recipe;
   final bool isFave;
+  final VoidCallback onRecipeCardClicked;
+  final String? recipeUID;
   const recipeCard({
     super.key,
     required this.recentlyView,
     required this.recipe,
     required this.isFave,
+    required this.onRecipeCardClicked,
+    this.recipeUID,
   });
 
   @override
@@ -19,15 +26,61 @@ class recipeCard extends StatefulWidget {
 }
 
 class _recipeCardState extends State<recipeCard> {
+  bool isLiked = false;
+  final currentUser = FirebaseAuth.instance.currentUser!;
+  final userCollection = FirebaseFirestore.instance.collection('Users');
+
+  void toggleLike() {
+    if (mounted) {
+      setState(() {
+        isLiked = !isLiked;
+      });
+    }
+
+    DocumentReference userRef = userCollection.doc(currentUser.uid);
+
+    if (isLiked) {
+      userRef.update({
+        'FavoriteRecipe': FieldValue.arrayUnion([widget.recipeUID])
+      });
+    } else {
+      userRef.update({
+        'FavoriteRecipe': FieldValue.arrayRemove([widget.recipeUID])
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userCollection.doc(currentUser.uid).get().then((DocumentSnapshot snapshot) {
+      if (mounted) {
+        if (snapshot.exists) {
+          final userData = snapshot.data() as Map<String, dynamic>;
+          final favoriteRecipes =
+              List<String>.from(userData['FavoriteRecipe'] ?? []);
+
+          // Check if the RecipeUID is in the favorite list
+          setState(() {
+            isLiked = favoriteRecipes.contains(widget.recipeUID);
+          });
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        widget.onRecipeCardClicked();
         Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => recipePage(
                 recipe: widget.recipe,
+                isFav: widget.isFave,
+                recipeUID: widget.recipeUID,
               ),
             ));
       },
@@ -201,7 +254,8 @@ class _recipeCardState extends State<recipeCard> {
                           ),
                         ),
                       ),
-                      if (isFav) const Icon(Icons.favorite_border_outlined),
+                      if (isFav)
+                        like_button(isLiked: isLiked, onTap: toggleLike),
                     ],
                   )
                 ],

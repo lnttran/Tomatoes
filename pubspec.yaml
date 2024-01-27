@@ -37,6 +37,9 @@ dependencies:
   modal_bottom_sheet: ^2.1.2
   csv: ^5.1.1
   easy_search_bar: ^2.5.0
+  dropdown_search: ^5.0.6
+  dio: ^4.0.0
+  dropdown_textfield: ^1.0.8
 
   #For sliding the card for more option
   flutter_slidable: ^3.0.0
@@ -99,7 +102,21 @@ flutter:
     - assets/images/google.png
     - assets/images/startBG.jpg
     - assets/images/pizza.webp
-    - assets/recipeData/recipes_w_search_terms.csv
+    - assets/icons/dairy-products.png
+    - assets/icons/meat.png
+    - assets/icons/chicken-leg.png
+    - assets/icons/broccoli.png
+    - assets/icons/carb.png
+    - assets/icons/carrot.png
+    - assets/icons/grape.png
+    - assets/icons/leaf.png
+    - assets/icons/meat-2.png
+    - assets/icons/meat-3.png
+    - assets/icons/salmon.png
+    - assets/icons/spinach.png
+    - assets/icons/tomato.png
+    - assets/icons/turkey.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

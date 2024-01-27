@@ -7,10 +7,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/Components/userClass.dart';
 import 'package:tomatoes/chatPage/messageClass.dart';
+import 'package:tomatoes/invertory/ingredientsClass.dart';
 
 class APIs {
   // return current user
   static User? get currentUser => FirebaseAuth.instance.currentUser!;
+  static final userCollection = FirebaseFirestore.instance.collection('Users');
 
   //for storing self information
   static userClass? me;
@@ -18,39 +20,53 @@ class APIs {
   static Future<userClass?> initializeMe() async {
     userClass? me;
     if (currentUser != null) {
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .where('Email', isEqualTo: currentUser!.email)
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          final userData = querySnapshot.docs[0].data() as Map<String, dynamic>;
+      try {
+        final DocumentSnapshot documentSnapshot =
+            await userCollection.doc(currentUser!.uid).get();
 
-          // Initialize the userClass object with retrieved data
-          me = userClass(
-            id: currentUser!.uid,
-            firstName: userData['First_name'],
-            lastName: userData['Last_name'],
-            username: userData['Username'],
-            email: currentUser!.email.toString(),
-            image: currentUser!.photoURL.toString(),
-            createAt: userData['Create_At'],
-            isOnline: userData['isOnline'],
-            lastActive: userData['Last_active'],
-            pushToken: userData['pushToken'],
-          );
-
-          // Now, you have the 'me' object initialized with the current user's information
-          print(
-              'User Info: ${me!.firstName} ${me!.lastName}, Email: ${me!.email}');
-
-          return me;
+        if (documentSnapshot.exists) {
+          final userData = documentSnapshot.data() as Map<String, dynamic>;
+          me = userClass.fromJson(userData);
+        } else {
+          print("User not found in Firestore");
         }
-      }).catchError((error) {
-        print('Error retrieving user data: $error');
-      });
+      } catch (e) {
+        print("Error fetching user data: $e");
+      }
     }
     return me;
+    //       .then((QuerySnapshot querySnapshot) {
+    //     if (querySnapshot.docs.isNotEmpty) {
+    //       final userData = querySnapshot.docs[0].data() as Map<String, dynamic>;
+
+    //       // Initialize the userClass object with retrieved data
+    //       me = userClass(
+    //         id: currentUser!.uid,
+    //         firstName: userData['First_name'],
+    //         lastName: userData['Last_name'],
+    //         username: userData['Username'],
+    //         email: currentUser!.email.toString(),
+    //         image: currentUser!.photoURL.toString(),
+    //         createAt: userData['Create_At'],
+    //         isOnline: userData['isOnline'],
+    //         lastActive: userData['Last_active'],
+    //         pushToken: userData['pushToken'],
+    //         followers: userData['Followers'],
+    //         followings: userData['Followings'],
+    //         recentlyView: userData['RecentlyView'],
+    //       );
+
+    //       // Now, you have the 'me' object initialized with the current user's information
+    //       // print(
+    //       //     'User Info: ${me!.firstName} ${me!.lastName}, Email: ${me!.email}');
+
+    //       return me;
+    //     }
+    //   }).catchError((error) {
+    //     print('Error retrieving user data: $error');
+    //   });
+    // }
+    // return me;
   }
 
   // for accessing firebase storage
@@ -78,14 +94,14 @@ class APIs {
       print("Upload failed");
     }
 
-    print("Done uploading");
+    // print("Done uploading");
 
     userClass? me = await initializeMe();
 
     if (me != null) {
       //update image in firestore database
-      me!.image = await ref.getDownloadURL();
-      currentUser!.updatePhotoURL(me!.image);
+      me.image = await ref.getDownloadURL();
+      currentUser!.updatePhotoURL(me.image);
 
       //make a comment on this
       // Trong cai personal Tran xai CachedNetworkImage -> No cache la load 1 lan xong roi luu lai
@@ -96,12 +112,13 @@ class APIs {
       // lam gi co cai page nao :)))
       //chu dau ra cai nafy ?
       // code nhieu thi biet ma oi
-      await CachedNetworkImage.evictFromCache(currentUser!.photoURL!);
 
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(currentUser!.email)
-          .update({'Image': me!.image});
+      if (currentUser != null && currentUser!.photoURL != null) {
+        // Evict the image from cache
+        await CachedNetworkImage.evictFromCache(currentUser!.photoURL!);
+      }
+
+      await userCollection.doc(currentUser!.uid).update({'Image': me.image});
     }
   }
 
@@ -197,10 +214,48 @@ class APIs {
     //   timeCreated: DateTime.now().millisecondsSinceEpoch.toString(),
     // );
 
-    final ref = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(currentUser!.email)
-        .collection('User Posts');
+    final ref = userCollection.doc(currentUser!.uid).collection('User Posts');
     await ref.doc(recipe.id.toString()).set(recipe.toJson());
+  }
+
+  static void onRecipeCardClicked(String recipeId) async {
+    // final currentUser = FirebaseAuth.instance.currentUser!
+
+    // Get user data
+    DocumentSnapshot userSnapshot =
+        await userCollection.doc(currentUser!.uid).get();
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+    List<String> recentlyViewList =
+        List<String>.from(userData['RecentlyView'] ?? []);
+
+    if (recentlyViewList.contains(recipeId)) {
+      // If it's in the list, remove it from its current position
+      recentlyViewList.remove(recipeId);
+    }
+
+    recentlyViewList.insert(0, recipeId);
+
+    if (recentlyViewList.length > 10) {
+      recentlyViewList.removeLast();
+    }
+    await userCollection
+        .doc(currentUser!.uid)
+        .update({'RecentlyView': recentlyViewList});
+    // print('update recentlyViewList');
+  }
+
+  static void addIngredient(IngredientClass ingredient) async {
+    final ref = userCollection
+        .doc(currentUser!.uid)
+        .collection('Available Ingredients');
+    await ref.doc(ingredient.name).set(ingredient.toJson());
+  }
+
+  static void deleteIngredient(String name) async {
+    final ref = userCollection
+        .doc(currentUser!.uid)
+        .collection('Available Ingredients');
+
+    await ref.doc(name).delete();
   }
 }

@@ -60,7 +60,7 @@ class Recipe {
     id = int.parse(json['id'].toString());
     name = json['name'] as String;
     description = json['description'] as String;
-    ingredients = (json['ingredients'] as List?)
+    ingredients = (json['ingredients_raw_str'] as List?)
             ?.map((item) => item as String)
             .toList() ??
         [];

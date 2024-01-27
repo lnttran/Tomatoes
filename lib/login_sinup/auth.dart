@@ -15,9 +15,9 @@ class auth extends StatelessWidget {
           builder: (context, snapshot) {
             //user is login
             if (snapshot.hasData) {
-              return bottom_bar();
+              return const bottom_bar();
             } else {
-              return logInorRegister();
+              return const logInorRegister();
             }
           }),
     );

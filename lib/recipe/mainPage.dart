@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/Components/recipe.dart';
+import 'package:tomatoes/Components/typeFilter.dart';
 import 'package:tomatoes/main.dart';
+import 'package:tomatoes/method/APIs.dart';
 import 'package:tomatoes/recipe/filterfoodType.dart';
 import 'package:tomatoes/recipe/recipeCard.dart';
 
@@ -26,12 +28,23 @@ class _mainPageState extends State<mainPage> {
   List<DocumentSnapshot> listOfRecipes = [];
   bool isLoading = true;
   int numOfRecipePerPage = 20;
-  late DocumentSnapshot lastDocument;
+  late DocumentSnapshot? lastDocument;
+  Set<TypeFilter> selectedTypes = <TypeFilter>{};
 
   getRecipe() async {
-    Query recipesQuery = FirebaseFirestore.instance
-        .collection('Recipes')
-        .limit(numOfRecipePerPage);
+    Query recipesQuery;
+    // Set<typeFilter> selectedType = filterFoodTypeInstance.getSelectedType();
+    if (selectedTypes.isEmpty) {
+      recipesQuery = FirebaseFirestore.instance
+          .collection('Recipes')
+          .limit(numOfRecipePerPage);
+    } else {
+      recipesQuery = FirebaseFirestore.instance
+          .collection('Recipes')
+          .where('tags',
+              arrayContainsAny: selectedTypes.map((type) => type.value))
+          .limit(numOfRecipePerPage);
+    }
 
     setState(() {
       isLoading = true;
@@ -47,10 +60,20 @@ class _mainPageState extends State<mainPage> {
 
   getMoreRecipe() async {
     print("getMoreRecipe function is called");
-    Query recipesQuery = FirebaseFirestore.instance
-        .collection('Recipes')
-        .startAfterDocument(lastDocument)
-        .limit(numOfRecipePerPage);
+    Query recipesQuery;
+    // Set<typeFilter> selectedType = filterFoodTypeInstance.getSelectedType();
+    if (selectedTypes.isEmpty) {
+      recipesQuery = FirebaseFirestore.instance
+          .collection('Recipes')
+          .limit(numOfRecipePerPage);
+    } else {
+      recipesQuery = FirebaseFirestore.instance
+          .collection('Recipes')
+          .where('tags',
+              arrayContainsAny: selectedTypes.map((type) => type.value))
+          .startAfterDocument(lastDocument!)
+          .limit(numOfRecipePerPage);
+    }
 
     QuerySnapshot querySnapshot = await recipesQuery.get();
     lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -60,11 +83,37 @@ class _mainPageState extends State<mainPage> {
     });
   }
 
+  getRecentlyViewList() async {
+    DocumentSnapshot userSnapshot =
+        await userCollection.doc(currentUser.uid).get();
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+    List<dynamic> recentlyViewList = userData['RecentlyView'];
+    if (recentlyViewList.isEmpty) {
+      List<String> first10Recipes =
+          listOfRecipes.take(10).map((recipe) => recipe.id).toList();
+
+      // Update Firestore with the first 10 recipes
+      await userCollection
+          .doc(currentUser.uid)
+          .update({'RecentlyView': first10Recipes});
+    }
+  }
+
+  void handleSelectedFilterChange(Set<TypeFilter> thisSelectedTypes) {
+    setState(() {
+      lastDocument = null;
+      selectedTypes = thisSelectedTypes;
+    });
+    // Fetch the initial set of recipes with the new selectedType
+    getRecipe();
+  }
+
   @override
   void initState() {
     super.initState();
 
     getRecipe();
+    getRecentlyViewList();
     scrollController.addListener(() {
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
@@ -106,7 +155,7 @@ class _mainPageState extends State<mainPage> {
             children: [
               if (!isTextFieldFocused)
                 StreamBuilder<DocumentSnapshot>(
-                  stream: userCollection.doc(currentUser.email).snapshots(),
+                  stream: userCollection.doc(currentUser.uid).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       final userData =
@@ -266,7 +315,9 @@ class _mainPageState extends State<mainPage> {
               if (!isTextFieldFocused)
                 Column(
                   children: [
-                    const FilterFoodType(),
+                    FilterFoodType(
+                      onSelectedTypeChange: handleSelectedFilterChange,
+                    ),
                     /**
                      * Recently view section 
                      */
@@ -284,6 +335,67 @@ class _mainPageState extends State<mainPage> {
                     ),
                     const SizedBox(
                       height: 10,
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: StreamBuilder(
+                          stream:
+                              userCollection.doc(currentUser.uid).snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final userData =
+                                  snapshot.data!.data() as Map<String, dynamic>;
+                              List<dynamic> recentlyViewList =
+                                  userData['RecentlyView'];
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: recentlyViewList.length,
+                                  itemBuilder: (context, index) {
+                                    final currentRecipeID =
+                                        recentlyViewList[index];
+                                    return StreamBuilder(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('Recipes')
+                                            .doc(currentRecipeID)
+                                            .snapshots(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            final recipeData = snapshot.data!
+                                                .data() as Map<String, dynamic>;
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 15.0),
+                                              child: recipeCard(
+                                                onRecipeCardClicked: () =>
+                                                    APIs.onRecipeCardClicked(
+                                                        currentRecipeID),
+                                                recentlyView: true,
+                                                recipe:
+                                                    Recipe.fromJson(recipeData),
+                                                isFave: true,
+                                                recipeUID: currentRecipeID,
+                                              ),
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            return Center(
+                                              child: Text(
+                                                  'Error: ${snapshot.error}'),
+                                            );
+                                          }
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        });
+                                  });
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
+                              );
+                            }
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }),
                     ),
                     const SizedBox(
                       height: 10,
@@ -316,15 +428,21 @@ class _mainPageState extends State<mainPage> {
                     ? _searchList.length
                     : listOfRecipes.length,
                 itemBuilder: ((context, index) {
+                  final recipeID = isTextFieldFocused
+                      ? _searchList[index].id
+                      : listOfRecipes[index].id;
                   final recipe = isTextFieldFocused
                       ? _searchList[index].data() as Map<String, dynamic>
                       : listOfRecipes[index].data() as Map<String, dynamic>;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 15.0),
                     child: recipeCard(
+                      onRecipeCardClicked: () =>
+                          APIs.onRecipeCardClicked(recipeID),
                       recentlyView: false,
                       recipe: Recipe.fromJson(recipe),
                       isFave: true,
+                      recipeUID: recipeID,
                     ),
                   );
                 }),

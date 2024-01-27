@@ -15,13 +15,13 @@ import 'package:tomatoes/recipe/recipeCard.dart';
 class userPostCard extends StatefulWidget {
   final String postID;
   final Recipe recipe;
-  final String userEmail;
+  final String userUid;
 
   const userPostCard({
     super.key,
     required this.recipe,
     required this.postID,
-    required this.userEmail,
+    required this.userUid,
   });
 
   @override
@@ -44,7 +44,7 @@ class _userPostCardState extends State<userPostCard> {
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
       //geting the information of Users->widget.user.email
-      stream: userCollection.doc(widget.userEmail).snapshots(),
+      stream: userCollection.doc(widget.userUid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -119,7 +119,11 @@ class _userPostCardState extends State<userPostCard> {
                   height: 10,
                 ),
                 recipeCard(
-                    recentlyView: false, recipe: widget.recipe, isFave: false),
+                  recentlyView: false,
+                  recipe: widget.recipe,
+                  isFave: false,
+                  onRecipeCardClicked: () {},
+                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Divider(
@@ -145,7 +149,7 @@ class _userPostCardState extends State<userPostCard> {
                             isScrollControlled: true,
                             builder: (_) {
                               return BottomSheetScreen(
-                                  userEmail: widget.userEmail,
+                                  userUid: widget.userUid,
                                   postID: widget.postID);
                             });
                       }),
@@ -197,7 +201,7 @@ class _userPostCardState extends State<userPostCard> {
 
     //Access the document in firebase
     DocumentReference postRef = userCollection
-        .doc(widget.userEmail)
+        .doc(widget.userUid)
         .collection('User Posts')
         .doc(widget.postID);
 
@@ -231,7 +235,7 @@ class _userPostCardState extends State<userPostCard> {
                     //delete the comments from firestore first
 
                     final commentDocs = await userCollection
-                        .doc(widget.userEmail)
+                        .doc(widget.userUid)
                         .collection('User Posts')
                         .doc(widget.postID)
                         .collection('Comments')
@@ -239,7 +243,7 @@ class _userPostCardState extends State<userPostCard> {
 
                     for (var doc in commentDocs.docs) {
                       await userCollection
-                          .doc(widget.userEmail)
+                          .doc(widget.userUid)
                           .collection('User Posts')
                           .doc(widget.postID)
                           .collection('Comments')
@@ -249,7 +253,7 @@ class _userPostCardState extends State<userPostCard> {
 
                     //then delete the posts
                     userCollection
-                        .doc(widget.userEmail)
+                        .doc(widget.userUid)
                         .collection('User Posts')
                         .doc(widget.postID)
                         .delete()
@@ -268,11 +272,12 @@ class _userPostCardState extends State<userPostCard> {
 }
 
 class BottomSheetScreen extends StatefulWidget {
-  final String userEmail;
+  final String userUid;
   final String postID;
 
   BottomSheetScreen({
-    required this.userEmail,
+    super.key,
+    required this.userUid,
     required this.postID,
   });
   @override
@@ -300,7 +305,7 @@ class _BottomSheetScreenState extends State<BottomSheetScreen> {
                   children: [
                     StreamBuilder<QuerySnapshot>(
                       stream: userCollection
-                          .doc(widget.userEmail)
+                          .doc(widget.userUid)
                           .collection('User Posts')
                           .doc(widget.postID)
                           .collection('Comments')
@@ -327,7 +332,7 @@ class _BottomSheetScreenState extends State<BottomSheetScreen> {
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: Comment(
                                   text: commentData['CommentText'],
-                                  userEmail: commentData['CommentedBy'],
+                                  userUid: commentData['CommentedBy'],
                                   time: MyDateUtil.formatDate(
                                       commentData['CommentedTime']),
                                   onPressed: () => deleteComment(commentID),
@@ -419,13 +424,13 @@ class _BottomSheetScreenState extends State<BottomSheetScreen> {
   void addComment(String commentText) {
     //write the comment to firestore under the comments collection for this post
     userCollection
-        .doc(widget.userEmail)
+        .doc(widget.userUid)
         .collection('User Posts')
         .doc(widget.postID)
         .collection('Comments')
         .add({
       'CommentText': commentText,
-      'CommentedBy': currentUser.email,
+      'CommentedBy': currentUser.uid,
       'CommentedTime': Timestamp.now(), //need to format this when display
     });
 
@@ -450,7 +455,7 @@ class _BottomSheetScreenState extends State<BottomSheetScreen> {
               //delete the comments from firestore first
 
               userCollection
-                  .doc(widget.userEmail)
+                  .doc(widget.userUid)
                   .collection('User Posts')
                   .doc(widget.postID)
                   .collection('Comments')

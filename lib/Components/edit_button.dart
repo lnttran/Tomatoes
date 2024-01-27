@@ -22,14 +22,16 @@ class edit_button extends StatelessWidget {
         //   horizontal: 5,
         // ),
         decoration: BoxDecoration(
-          color: Color(0xFFF83015),
+          color: const Color(0xFFF83015),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(text,
-            style: Theme.of(context).textTheme.titleSmall //?.copyWith(
-            // color: Colors.white,
-            // ),
-            ),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
       ),
     );
   }

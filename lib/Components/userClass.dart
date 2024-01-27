@@ -15,6 +15,10 @@ class userClass {
     required this.email,
     required this.pushToken,
     required this.id,
+    required this.recentlyView,
+    required this.followers,
+    required this.followings,
+    required this.favoriteRecipe,
   });
   late String image;
   late String firstName;
@@ -26,6 +30,10 @@ class userClass {
   late String lastActive;
   late String pushToken;
   late String email;
+  late List<String> recentlyView;
+  late List<String> followers;
+  late List<String> followings;
+  late List<String> favoriteRecipe;
 
   //constructor that takes a Map<String, dynamic> as parameter.
   //convert json data into an instance of the class
@@ -44,6 +52,20 @@ class userClass {
     lastActive = DateTime.now().millisecondsSinceEpoch.toString();
     pushToken = json['pushToken'] ?? '';
     email = json['Email'] ?? '';
+    recentlyView = (json['RecentlyView'] as List?)
+            ?.map((item) => item as String)
+            .toList() ??
+        [];
+    followers =
+        (json['Followers'] as List?)?.map((item) => item as String).toList() ??
+            [];
+    followings =
+        (json['Followings'] as List?)?.map((item) => item as String).toList() ??
+            [];
+    favoriteRecipe = (json['FavoriteRecipe'] as List?)
+            ?.map((item) => item as String)
+            .toList() ??
+        [];
   }
 
   //this function is to assign the value from the userInput to the jSon file in firebase
@@ -59,6 +81,10 @@ class userClass {
     data['Last_active'] = lastActive;
     data['pushToken'] = pushToken;
     data['Email'] = email;
+    data['RecentlyView'] = recentlyView;
+    data['Followers'] = followers;
+    data['Followings'] = followings;
+    data['FavoriteRecipe'] = favoriteRecipe;
 
     return data;
   }

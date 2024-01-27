@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomatoes/Components/userClass.dart';
 import 'package:tomatoes/chatPage/chatCart.dart';
-import 'package:tomatoes/main.dart';
 
 class chatLog extends StatefulWidget {
   const chatLog({super.key});
@@ -211,7 +210,7 @@ class _chatLogState extends State<chatLog> {
           padding: const EdgeInsets.all(8.0),
           child: FloatingActionButton(
             onPressed: () {},
-            child: Icon(
+            child: const Icon(
               Icons.add_circle_outline,
               color: Color(0xFFF83015),
             ),

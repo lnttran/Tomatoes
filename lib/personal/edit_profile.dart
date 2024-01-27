@@ -65,14 +65,14 @@ class _edit_profileState extends State<edit_profile> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Color(0xFFFFBFB0),
+        backgroundColor: const Color(0xFFFFBFB0),
         title: Text('Edit $field'),
         content: TextField(
           autofocus: true,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Enter new $field',
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               fontSize: 12,
             ),
           ),
@@ -83,11 +83,12 @@ class _edit_profileState extends State<edit_profile> {
         actions: [
           //Cancel button
           TextButton(
-              child: Text('Cancel'), onPressed: () => Navigator.pop(context)),
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context)),
 
           //Save button
           TextButton(
-              child: Text('Save'),
+              child: const Text('Save'),
               onPressed: () => Navigator.of(context).pop(newValue)),
         ],
       ),
@@ -95,7 +96,7 @@ class _edit_profileState extends State<edit_profile> {
 
     //update in the firestore
     if (newValue.trim().length > 1) {
-      await userCollection.doc(currentUser.email).update({field: newValue});
+      await userCollection.doc(currentUser.uid).update({field: newValue});
     }
   }
 
@@ -108,7 +109,7 @@ class _edit_profileState extends State<edit_profile> {
             onPressed: () {
               // Add your button's functionality here
             },
-            child: Text(
+            child: const Text(
               'Save',
               style: TextStyle(
                 color: Colors.black, // Set the text color
@@ -121,7 +122,7 @@ class _edit_profileState extends State<edit_profile> {
         ),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: userCollection.doc(currentUser.email).snapshots(),
+        stream: userCollection.doc(currentUser.uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -160,11 +161,11 @@ class _edit_profileState extends State<edit_profile> {
                                         Container(
                                       width: thisSize.height * .15,
                                       height: thisSize.height * .15,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         //shape: BoxShape.circle,
                                         color: Color(0xFFF83015),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.person,
                                         color: Colors.white,
                                       ),
@@ -173,7 +174,7 @@ class _edit_profileState extends State<edit_profile> {
                                 : Container(
                                     width: thisSize.height * .15,
                                     height: thisSize.height * .15,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xFFF83015),
                                     ),
                                     child: Icon(
@@ -191,8 +192,8 @@ class _edit_profileState extends State<edit_profile> {
                           onPressed: () {
                             _showBottomSheet(context);
                           },
-                          shape: CircleBorder(),
-                          color: Color(0xFFFFBFB0),
+                          shape: const CircleBorder(),
+                          color: const Color(0xFFFFBFB0),
                           child: Icon(
                             Icons.edit,
                             color: Colors.black,
@@ -202,12 +203,12 @@ class _edit_profileState extends State<edit_profile> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Text(
                     userData['Email'],
-                    style: TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                   MyTextBox(
                     text: userData['First_name'],
@@ -241,8 +242,8 @@ class _edit_profileState extends State<edit_profile> {
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet<void>(
         context: context,
-        backgroundColor: Color(0xFFFFE2DC),
-        shape: RoundedRectangleBorder(
+        backgroundColor: const Color(0xFFFFE2DC),
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (context) {
@@ -251,8 +252,8 @@ class _edit_profileState extends State<edit_profile> {
             padding: EdgeInsets.symmetric(vertical: thisSize.height * .03),
             children: [
               ListTile(
-                leading: Icon(Icons.photo_library_outlined),
-                title: Text(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text(
                   'Photos from library',
                   style: TextStyle(
                     fontSize: 13,
@@ -261,8 +262,8 @@ class _edit_profileState extends State<edit_profile> {
                 onTap: pickImage,
               ),
               ListTile(
-                leading: Icon(Icons.photo_camera),
-                title: Text(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text(
                   'Take photo',
                   style: TextStyle(
                     fontSize: 13,
