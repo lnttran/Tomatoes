@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/method/convertTime.dart';
+import 'package:tomatoes/personal/personal.dart';
 import 'package:tomatoes/recipe/recipeCard.dart';
 
 // Display users' post information to the home page
@@ -67,46 +68,56 @@ class _userPostCardState extends State<userPostCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(thisSize.height * .3),
-                            child: CachedNetworkImage(
-                              width: thisSize.height * .055,
-                              height: thisSize.height * .055,
-                              imageUrl: userData['Image'],
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Personal_Page(
+                                      userUid: widget.userUid,
+                                      isLeading: true)));
+                        },
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(thisSize.height * .3),
+                              child: CachedNetworkImage(
+                                width: thisSize.height * .055,
+                                height: thisSize.height * .055,
+                                imageUrl: userData['Image'],
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: thisSize.height * .055,
+                                  height: thisSize.height * .055,
+                                  decoration: const BoxDecoration(
+                                    //shape: BoxShape.circle,
+                                    color: Color(0xFFF83015),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                              errorWidget: (context, url, error) => Container(
-                                width: thisSize.height * .055,
-                                height: thisSize.height * .055,
-                                decoration: const BoxDecoration(
-                                  //shape: BoxShape.circle,
-                                  color: Color(0xFFF83015),
-                                ),
-                                child: const Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                ),
-                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            userData['Username'],
-                            style: TextStyle(color: Colors.grey[800]),
-                          ),
-                        ],
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              userData['Username'],
+                              style: TextStyle(color: Colors.grey[800]),
+                            ),
+                          ],
+                        ),
                       ),
                       if (userData['Uid'] == currentUser.uid)
                         delete_button(

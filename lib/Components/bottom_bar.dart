@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -16,17 +17,30 @@ class bottom_bar extends StatefulWidget {
 }
 
 class _bottom_barState extends State<bottom_bar> {
+  final currentUser = FirebaseAuth.instance.currentUser!;
+
   int _selectedIndex = 0;
-  List<Widget> bar = [
-    homePage(),
-    mainPage(),
-    favoritePage(),
-    inventoryPage(),
-    Personal_Page(),
-  ];
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final currentUser = FirebaseAuth.instance.currentUser!;
+  //   currentUserUID = currentUser.uid;
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final String currentUserUID = currentUser.uid;
+    List<Widget> bar = [
+      const homePage(),
+      const mainPage(),
+      const favoritePage(),
+      const inventoryPage(),
+      Personal_Page(
+        userUid: currentUserUID,
+        isLeading: false,
+      ),
+    ];
     return Scaffold(
       body: bar.elementAt(_selectedIndex),
       bottomNavigationBar: Padding(
@@ -38,17 +52,17 @@ class _bottom_barState extends State<bottom_bar> {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: Color(0xFFFFE2DC),
+            color: const Color(0xFFFFE2DC),
             borderRadius: BorderRadius.circular(25),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
             child: GNav(
-              rippleColor: Color(0xFFFFE2DC),
-              hoverColor: Color(0xFFFC6D59),
+              rippleColor: const Color(0xFFFFE2DC),
+              hoverColor: const Color(0xFFFC6D59),
               color: Colors.black,
               activeColor: Colors.black,
-              tabBackgroundColor: Color(0xFFF83015),
+              tabBackgroundColor: const Color(0xFFF83015),
               // padding: EdgeInsets.all(15),
               gap: 4,
               tabs: const [

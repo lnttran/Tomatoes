@@ -4,15 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tomatoes/Components/edit_button.dart';
 import 'package:tomatoes/Components/recipe.dart';
+import 'package:tomatoes/Components/userClass.dart';
+import 'package:tomatoes/chatPage/chatPage.dart';
 import 'package:tomatoes/homePage/addPost.dart';
 import 'package:tomatoes/homePage/userPostCard.dart';
+import 'package:tomatoes/method/APIs.dart';
 import 'package:tomatoes/personal/edit_profile.dart';
 import 'package:tomatoes/personal/personal_drawer.dart';
 
 import '../main.dart';
 
 class Personal_Page extends StatefulWidget {
-  const Personal_Page({super.key});
+  final String userUid;
+  final bool isLeading;
+  const Personal_Page(
+      {super.key, required this.userUid, required this.isLeading});
 
   @override
   State<Personal_Page> createState() => _Personal_PageState();
@@ -21,32 +27,34 @@ class Personal_Page extends StatefulWidget {
 class _Personal_PageState extends State<Personal_Page> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final userCollection = FirebaseFirestore.instance.collection('Users');
+  bool isCurrentUserFollowing = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: widget.isLeading,
+        surfaceTintColor: Colors.white,
         actionsIconTheme: const IconThemeData(
           color: Colors.black,
         ),
-        //automaticallyImplyLeading: true,
       ),
-      endDrawer: const MyDrawer(),
+      endDrawer: (currentUser.uid == widget.userUid) ? const MyDrawer() : null,
       body: StreamBuilder<DocumentSnapshot>(
-        //geting the information of Users->widget.user.email
-        stream: userCollection.doc(currentUser.uid).snapshots(),
+        stream: userCollection.doc(widget.userUid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userData = snapshot.data!.data() as Map<String, dynamic>;
-            int followersLength = (userData['Followers'] as List?)?.length ?? 0;
-            int followingsLength =
-                (userData['Followings'] as List?)?.length ?? 0;
+            List<dynamic> followingList =
+                userData['Followings'] as List<dynamic>;
+            List<dynamic> followerList = userData['Followers'] as List<dynamic>;
+            isCurrentUserFollowing = followerList.contains(currentUser.uid);
 
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   left: 15,
-                  bottom: 15,
+                  bottom: widget.isLeading ? 0 : 15,
                   right: 15,
                 ),
                 child: Column(
@@ -86,7 +94,7 @@ class _Personal_PageState extends State<Personal_Page> {
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection('Users')
-                                .doc(currentUser.uid)
+                                .doc(widget.userUid)
                                 .collection('User Posts')
                                 .snapshots(),
                             builder: (context, snapshot) {
@@ -111,14 +119,14 @@ class _Personal_PageState extends State<Personal_Page> {
                               ]);
                             }),
                         Column(children: [
-                          Text('$followersLength'),
-                          Text(followersLength > 0 ? 'Followers' : 'Follower'),
+                          Text('${followerList.length}'),
+                          Text(followerList.isEmpty ? 'Follower' : 'Followers'),
                         ]),
                         Column(children: [
-                          Text('$followingsLength'),
-                          Text(followingsLength > 0
-                              ? 'Followings'
-                              : 'Following'),
+                          Text('${followingList.length}'),
+                          Text(followingList.isEmpty
+                              ? 'Following'
+                              : 'Followings'),
                         ]),
                         const SizedBox(
                           width: 10,
@@ -131,36 +139,78 @@ class _Personal_PageState extends State<Personal_Page> {
                     Row(
                       children: [
                         Text(
-                          currentUser.email!,
+                          userData['Email'],
                         )
                       ],
                     ),
                     const SizedBox(
                       height: 15,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        edit_button(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => edit_profile(),
-                                  ));
-                            },
-                            text: 'Edit profile'),
-                        edit_button(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => addPost(),
-                                  ));
-                            },
-                            text: 'Add recipe')
-                      ],
-                    ),
+                    if (widget.userUid == currentUser.uid)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          edit_button(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => edit_profile(),
+                                    ));
+                              },
+                              text: 'Edit profile'),
+                          edit_button(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => addPost(),
+                                    ));
+                              },
+                              text: 'Add recipe')
+                        ],
+                      )
+                    else
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          edit_button(
+                              onTap: () async {
+                                setState(() {
+                                  isCurrentUserFollowing =
+                                      !isCurrentUserFollowing;
+                                });
+                                if (isCurrentUserFollowing) {
+                                  await APIs.addCurrentUserFollowing(
+                                      widget.userUid);
+
+                                  followerList.add(currentUser.uid);
+                                } else {
+                                  await APIs.removeCurrentUserFollowing(
+                                      widget.userUid);
+
+                                  followerList.remove(currentUser.uid);
+                                }
+
+                                await userCollection
+                                    .doc(widget.userUid)
+                                    .update({'Followers': followerList});
+                              },
+                              text: isCurrentUserFollowing
+                                  ? 'Following'
+                                  : 'Follow'),
+                          edit_button(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => chatPage(
+                                          user: userClass.fromJson(userData)),
+                                    ));
+                              },
+                              text: 'Message')
+                        ],
+                      ),
                     const SizedBox(
                       height: 20,
                     ),
@@ -169,7 +219,7 @@ class _Personal_PageState extends State<Personal_Page> {
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('Users')
-                            .doc(currentUser.uid)
+                            .doc(widget.userUid)
                             .collection('User Posts')
                             .snapshots(),
                         builder: (context, snapshot) {
@@ -179,7 +229,7 @@ class _Personal_PageState extends State<Personal_Page> {
                             if (currentUserPosts.isEmpty) {
                               // Return a message or placeholder when there are no user posts
                               return const Center(
-                                child: Text("Upload your first recipe!"),
+                                child: Text("No recipe!"),
                               );
                             }
 
@@ -187,13 +237,13 @@ class _Personal_PageState extends State<Personal_Page> {
                               itemCount: currentUserPosts.length,
                               itemBuilder: (context, index) {
                                 final currentPost = currentUserPosts[index];
-                                final userUid = currentUser.uid;
+                                // final userUid = currentUser.uid;
                                 //Desplay the userPost if that post is made by the user
                                 return userPostCard(
                                     recipe:
                                         Recipe.fromJsonPost(currentPost.data()),
                                     postID: currentPost.id,
-                                    userUid: userUid);
+                                    userUid: widget.userUid);
                               },
                             );
                           } else if (snapshot.hasError) {

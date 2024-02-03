@@ -25,7 +25,7 @@ class _chatCardState extends State<chatCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
       //inkwell is child widget response to touch gesture such as tap and ink effect
       child: InkWell(

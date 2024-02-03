@@ -18,7 +18,7 @@ class _favoritePageState extends State<favoritePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
         child: Column(
           children: [
             Row(

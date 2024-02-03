@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:tomatoes/invertory/editIngredient.dart';
 import 'package:tomatoes/invertory/ingredientsClass.dart';
 
 class ingredientCard extends StatefulWidget {
@@ -17,38 +19,57 @@ class ingredientCard extends StatefulWidget {
 class _ingredientCardState extends State<ingredientCard> {
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      background: const Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: const StretchMotion(),
         children: [
-          SizedBox(
-            width: 30,
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => editIngredient(
+                          ingredient: widget.ingredient,
+                        ),
+                      ));
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      color: Color(0xFFF83015),
+                    )),
+              ),
+            ),
           ),
-          Icon(Icons.edit),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () {
+                  widget.onDelete();
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      // color: Color(0xFF211B25),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Color(0xFF211B25),
+                    )),
+              ),
+            ),
+          ),
         ],
       ),
-      // decoration: const BoxDecoration(
-      //     color: Colors.black,
-      //     borderRadius: BorderRadius.only(
-      //         bottomRight: Radius.circular(15),
-      //         topRight: Radius.circular(15))),
-
-      secondaryBackground: const Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Icon(Icons.delete),
-          SizedBox(
-            width: 40,
-          ),
-        ],
-      ),
-      key: ValueKey(widget.ingredient.name),
-      onDismissed: (DismissDirection direction) {
-        if (direction == DismissDirection.startToEnd) {
-        } else if (direction == DismissDirection.endToStart) {
-          widget.onDelete();
-        }
-      },
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),

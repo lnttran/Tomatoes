@@ -109,7 +109,7 @@ class _messageCardState extends State<messageCard> {
               vertical: 8,
               horizontal: 15,
             ),
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               // left: 15,
               // right: 15,
               bottom: 10,

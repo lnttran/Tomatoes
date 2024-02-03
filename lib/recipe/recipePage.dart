@@ -1,12 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:tomatoes/Components/like_button.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/recipe/PanelWidget.dart';
-import 'package:tomatoes/recipe/recipeCard.dart';
 
 class recipePage extends StatefulWidget {
   final Recipe recipe;
@@ -59,7 +58,6 @@ class _recipePageState extends State<recipePage> {
           final favoriteRecipes =
               List<String>.from(userData['FavoriteRecipe'] ?? []);
 
-          // Check if the RecipeUID is in the favorite list
           setState(() {
             isLiked = favoriteRecipes.contains(widget.recipeUID);
           });
@@ -89,14 +87,55 @@ class _recipePageState extends State<recipePage> {
   }
 
   Stack _body(BuildContext context) {
-    final imageDecorationBuilder =
-        ImageDecorationBuilder(widget.recipe.thumbnail);
+    print("Thumbnail URL: ${widget.recipe.thumbnail}");
     return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-              image: imageDecorationBuilder.buildImageDecoration()),
-        ),
+        if (widget.recipe.thumbnail.isNotEmpty)
+          // Image.network(
+          //   widget.recipe.thumbnail,
+          //   fit: BoxFit.cover, // You can adjust the fit as per your needs
+          //   width: double.infinity, // Set width to fill the container
+          //   height: double.infinity, // Set height to fill the container
+          // )
+          CachedNetworkImage(
+            width: double.infinity,
+            height: double.infinity,
+            imageUrl: widget.recipe.thumbnail,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              'assets/images/startBG.jpg',
+              fit: BoxFit.cover, // You can adjust the fit as per your needs
+              width: double.infinity, // Set width to fill the container
+              height: double.infinity,
+            ),
+
+            // Container(
+            //   width: thisSize.height * .055,
+            //   height: thisSize.height * .055,
+            //   decoration: const BoxDecoration(
+            //     //shape: BoxShape.circle,
+            //     color: Color(0xFFF83015),
+            //   ),
+            //   child: const Icon(
+            //     Icons.person,
+            //     color: Colors.white,
+            //   ),
+            // ),
+          ),
+        // else
+        //   Image.asset(
+        //     'assets/images/startBG.jpg',
+        //     fit: BoxFit.cover, // You can adjust the fit as per your needs
+        //     width: double.infinity, // Set width to fill the container
+        //     height: double.infinity,
+        //   ),
         SafeArea(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

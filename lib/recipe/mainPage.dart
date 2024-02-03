@@ -143,311 +143,322 @@ class _mainPageState extends State<mainPage> {
     //set to track the selected data
     // Set<tags> selectedTags = Set<tags>(); // To store selected tags
     return SafeArea(
-      child: SingleChildScrollView(
-        physics: isTextFieldFocused
-            ? const NeverScrollableScrollPhysics()
-            : const ScrollPhysics(),
-        controller: scrollController,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (!isTextFieldFocused)
-                StreamBuilder<DocumentSnapshot>(
-                  stream: userCollection.doc(currentUser.uid).snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final userData =
-                          snapshot.data!.data() as Map<String, dynamic>;
-                      return Row(
-                        children: [
-                          ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(thisSize.height * .3),
-                              child: CachedNetworkImage(
-                                width: thisSize.width * .15,
-                                height: thisSize.width * .15,
-                                imageUrl: userData['Image'],
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => Container(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: SingleChildScrollView(
+          physics: isTextFieldFocused
+              ? const NeverScrollableScrollPhysics()
+              : const ScrollPhysics(),
+          controller: scrollController,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (!isTextFieldFocused)
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: userCollection.doc(currentUser.uid).snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final userData =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        return Row(
+                          children: [
+                            ClipRRect(
+                                borderRadius:
+                                    BorderRadius.circular(thisSize.height * .3),
+                                child: CachedNetworkImage(
                                   width: thisSize.width * .15,
                                   height: thisSize.width * .15,
-                                  decoration: const BoxDecoration(
-                                    //shape: BoxShape.circle,
-                                    color: Color(0xFFF83015),
-                                  ),
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Hi ${userData['First_name']},',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      color: Colors.black,
+                                  imageUrl: userData['Image'],
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                              ),
-                            ],
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                    width: thisSize.width * .15,
+                                    height: thisSize.width * .15,
+                                    decoration: const BoxDecoration(
+                                      //shape: BoxShape.circle,
+                                      color: Color(0xFFF83015),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Hi ${userData['First_name']},',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        color: Colors.black,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+
+                if (!isTextFieldFocused)
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      //Search bar
+
+                      Row(
+                        children: [
+                          Text(
+                            'Get your recipe!',
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.start,
                           ),
                         ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
 
-              if (!isTextFieldFocused)
-                Column(
+                // search box
+                Row(
                   children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    //Search bar
-
-                    Row(
-                      children: [
-                        Text(
-                          'Get your recipe!',
-                          style: Theme.of(context).textTheme.titleLarge,
-                          textAlign: TextAlign.start,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
-
-              // search box
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      focusNode: _focusNode,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: Colors.grey,
-                        ),
-                        hintText: 'Search',
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(color: Colors.grey),
-                        filled: true,
-                        fillColor: const Color(0xFFFFE2DC),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 15),
-                        enabledBorder: OutlineInputBorder(
+                    Expanded(
+                      child: TextField(
+                        focusNode: _focusNode,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                          ),
+                          hintText: 'Search',
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(color: Colors.grey),
+                          filled: true,
+                          fillColor: const Color(0xFFFFE2DC),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 15),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  const BorderSide(color: Colors.white)),
+                          focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
-                            borderSide: const BorderSide(color: Colors.white)),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: const BorderSide(
-                            color: Color(
-                                0xFFF83015), // Set the color for the focused border line
-                            width:
-                                2, // Set the thickness for the focused border line
+                            borderSide: const BorderSide(
+                              color: Color(
+                                  0xFFF83015), // Set the color for the focused border line
+                              width:
+                                  2, // Set the thickness for the focused border line
+                            ),
+                          ),
+                        ),
+                        onChanged: (value) async {
+                          _searchList.clear();
+                          Query recipesQuery =
+                              FirebaseFirestore.instance.collection('Recipes');
+                          QuerySnapshot querySnapshot =
+                              await recipesQuery.get();
+                          List<DocumentSnapshot> list = querySnapshot.docs;
+
+                          for (var i in list) {
+                            final recipe = i.data() as Map<String, dynamic>;
+                            if (recipe['name']
+                                .toLowerCase()
+                                .contains(value.toLowerCase())) {
+                              _searchList.add(i);
+                            }
+                            setState(() {
+                              _searchList;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    if (isTextFieldFocused)
+                      TextButton(
+                        onPressed: () {
+                          _focusNode.unfocus();
+                          _searchList.clear();
+                        },
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Color(0xFFF83015),
                           ),
                         ),
                       ),
-                      onChanged: (value) async {
-                        _searchList.clear();
-                        Query recipesQuery =
-                            FirebaseFirestore.instance.collection('Recipes');
-                        QuerySnapshot querySnapshot = await recipesQuery.get();
-                        List<DocumentSnapshot> list = querySnapshot.docs;
-
-                        for (var i in list) {
-                          final recipe = i.data() as Map<String, dynamic>;
-                          if (recipe['name']
-                              .toLowerCase()
-                              .contains(value.toLowerCase())) {
-                            _searchList.add(i);
-                          }
-                          setState(() {
-                            _searchList;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  if (isTextFieldFocused)
-                    TextButton(
-                      onPressed: () {
-                        _focusNode.unfocus();
-                        _searchList.clear();
-                      },
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Color(0xFFF83015),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
-              if (!isTextFieldFocused)
-                Column(
-                  children: [
-                    FilterFoodType(
-                      onSelectedTypeChange: handleSelectedFilterChange,
-                    ),
-                    /**
-                     * Recently view section 
-                     */
-                    Row(
-                      children: [
-                        Text(
-                          'Recently views',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.black,
-                                  ),
-                          textAlign: TextAlign.start,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: StreamBuilder(
-                          stream:
-                              userCollection.doc(currentUser.uid).snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              final userData =
-                                  snapshot.data!.data() as Map<String, dynamic>;
-                              List<dynamic> recentlyViewList =
-                                  userData['RecentlyView'];
-                              return ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: recentlyViewList.length,
-                                  itemBuilder: (context, index) {
-                                    final currentRecipeID =
-                                        recentlyViewList[index];
-                                    return StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('Recipes')
-                                            .doc(currentRecipeID)
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            final recipeData = snapshot.data!
-                                                .data() as Map<String, dynamic>;
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 15.0),
-                                              child: recipeCard(
-                                                onRecipeCardClicked: () =>
-                                                    APIs.onRecipeCardClicked(
-                                                        currentRecipeID),
-                                                recentlyView: true,
-                                                recipe:
-                                                    Recipe.fromJson(recipeData),
-                                                isFave: true,
-                                                recipeUID: currentRecipeID,
-                                              ),
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Error: ${snapshot.error}'),
-                                            );
-                                          }
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        });
-                                  });
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Text('Error: ${snapshot.error}'),
-                              );
-                            }
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Main Course',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.black,
-                                  ),
-                          textAlign: TextAlign.start,
-                        ),
-                      ],
-                    ),
                   ],
                 ),
-              SizedBox(
-                height: isTextFieldFocused ? 20 : 10,
-              ),
-              if (isLoading == true)
-                const Center(child: CircularProgressIndicator()),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: isTextFieldFocused
-                    ? null
-                    : const NeverScrollableScrollPhysics(),
-                itemCount: isTextFieldFocused
-                    ? _searchList.length
-                    : listOfRecipes.length,
-                itemBuilder: ((context, index) {
-                  final recipeID = isTextFieldFocused
-                      ? _searchList[index].id
-                      : listOfRecipes[index].id;
-                  final recipe = isTextFieldFocused
-                      ? _searchList[index].data() as Map<String, dynamic>
-                      : listOfRecipes[index].data() as Map<String, dynamic>;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: recipeCard(
-                      onRecipeCardClicked: () =>
-                          APIs.onRecipeCardClicked(recipeID),
-                      recentlyView: false,
-                      recipe: Recipe.fromJson(recipe),
-                      isFave: true,
-                      recipeUID: recipeID,
-                    ),
-                  );
-                }),
-              ),
-            ],
+
+                if (!isTextFieldFocused)
+                  Column(
+                    children: [
+                      FilterFoodType(
+                        onSelectedTypeChange: handleSelectedFilterChange,
+                      ),
+                      /**
+                       * Recently view section 
+                       */
+                      Row(
+                        children: [
+                          Text(
+                            'Recently views',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Colors.black,
+                                ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 200,
+                        child: StreamBuilder(
+                            stream:
+                                userCollection.doc(currentUser.uid).snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final userData = snapshot.data!.data()
+                                    as Map<String, dynamic>;
+                                List<dynamic> recentlyViewList =
+                                    userData['RecentlyView'];
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: recentlyViewList.length,
+                                    itemBuilder: (context, index) {
+                                      final currentRecipeID =
+                                          recentlyViewList[index];
+                                      return StreamBuilder(
+                                          stream: FirebaseFirestore.instance
+                                              .collection('Recipes')
+                                              .doc(currentRecipeID)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              final recipeData =
+                                                  snapshot.data!.data()
+                                                      as Map<String, dynamic>;
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 15.0),
+                                                child: recipeCard(
+                                                  onRecipeCardClicked: () =>
+                                                      APIs.onRecipeCardClicked(
+                                                          currentRecipeID),
+                                                  recentlyView: true,
+                                                  recipe: Recipe.fromJson(
+                                                      recipeData),
+                                                  isFave: true,
+                                                  recipeUID: currentRecipeID,
+                                                ),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text(
+                                                    'Error: ${snapshot.error}'),
+                                              );
+                                            }
+                                            return const Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          });
+                                    });
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                  child: Text('Error: ${snapshot.error}'),
+                                );
+                              }
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Main Course',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Colors.black,
+                                ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                SizedBox(
+                  height: isTextFieldFocused ? 20 : 10,
+                ),
+                if (isLoading == true)
+                  const Center(child: CircularProgressIndicator()),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: isTextFieldFocused
+                      ? null
+                      : const NeverScrollableScrollPhysics(),
+                  itemCount: isTextFieldFocused
+                      ? _searchList.length
+                      : listOfRecipes.length,
+                  itemBuilder: ((context, index) {
+                    final recipeID = isTextFieldFocused
+                        ? _searchList[index].id
+                        : listOfRecipes[index].id;
+                    final recipe = isTextFieldFocused
+                        ? _searchList[index].data() as Map<String, dynamic>
+                        : listOfRecipes[index].data() as Map<String, dynamic>;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: recipeCard(
+                        onRecipeCardClicked: () =>
+                            APIs.onRecipeCardClicked(recipeID),
+                        recentlyView: false,
+                        recipe: Recipe.fromJson(recipe),
+                        isFave: true,
+                        recipeUID: recipeID,
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            ),
           ),
         ),
       ),

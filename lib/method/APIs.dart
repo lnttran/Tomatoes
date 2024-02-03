@@ -86,8 +86,8 @@ class APIs {
       //uploading image
       await ref
           .putFile(file, SettableMetadata(contentType: 'images/$ext'))
-          .then((p0) {
-        print('Data transfered: ${p0.bytesTransferred / 1000} kb');
+          .then((e) {
+        print('Data transfered: ${e.bytesTransferred / 1000} kb');
       });
       print("Success");
     } catch (e) {
@@ -103,16 +103,6 @@ class APIs {
       me.image = await ref.getDownloadURL();
       currentUser!.updatePhotoURL(me.image);
 
-      //make a comment on this
-      // Trong cai personal Tran xai CachedNetworkImage -> No cache la load 1 lan xong roi luu lai
-      // Tam 1-2 ngay thi no moi update len hieu ko
-      // Nen 1 la reset cache, 2 la doi thanh ImageNetwork (neu doi thanh thi khong can dong nay nua, nhung ma load se lau)
-      //hog hiu
-      //gui cho tui cai page S xem dc hem
-      // lam gi co cai page nao :)))
-      //chu dau ra cai nafy ?
-      // code nhieu thi biet ma oi
-
       if (currentUser != null && currentUser!.photoURL != null) {
         // Evict the image from cache
         await CachedNetworkImage.evictFromCache(currentUser!.photoURL!);
@@ -120,6 +110,32 @@ class APIs {
 
       await userCollection.doc(currentUser!.uid).update({'Image': me.image});
     }
+  }
+
+  static Future<String> uploadPostPicture(File file) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+    print('Extension: $ext');
+
+    //storage file ref with path
+    final ref = storage
+        .ref()
+        .child('post_images/${currentUser!.uid}_${DateTime.now()}.$ext');
+
+    print(file);
+    try {
+      //uploading image
+      await ref
+          .putFile(file, SettableMetadata(contentType: 'images/$ext'))
+          .then((e) {
+        print('Data transfered: ${e.bytesTransferred / 1000} kb');
+      });
+      print("Success");
+    } catch (e) {
+      print("Upload failed");
+    }
+
+    return await ref.getDownloadURL();
   }
 
   static String getConversationID(String id) =>
@@ -219,8 +235,6 @@ class APIs {
   }
 
   static void onRecipeCardClicked(String recipeId) async {
-    // final currentUser = FirebaseAuth.instance.currentUser!
-
     // Get user data
     DocumentSnapshot userSnapshot =
         await userCollection.doc(currentUser!.uid).get();
@@ -241,7 +255,6 @@ class APIs {
     await userCollection
         .doc(currentUser!.uid)
         .update({'RecentlyView': recentlyViewList});
-    // print('update recentlyViewList');
   }
 
   static void addIngredient(IngredientClass ingredient) async {
@@ -257,5 +270,34 @@ class APIs {
         .collection('Available Ingredients');
 
     await ref.doc(name).delete();
+  }
+
+  static String capitalizeFirstLetter(String text) {
+    return text.isNotEmpty ? text[0].toUpperCase() + text.substring(1) : text;
+  }
+
+  static Future<void> addCurrentUserFollowing(String userUID) async {
+    DocumentReference userRef = userCollection.doc(currentUser!.uid);
+    DocumentSnapshot userDoc = await userRef.get();
+    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+    List<dynamic> following = (userData['Followings'] as List<dynamic>?) ?? [];
+    if (!following.contains(userUID)) {
+      following.add(userUID);
+      await userRef.update({'Followings': following});
+      print('Follow succeeded');
+    }
+  }
+
+  static Future<void> removeCurrentUserFollowing(String userUID) async {
+    DocumentReference userRef = userCollection.doc(currentUser!.uid);
+    DocumentSnapshot userDoc = await userRef.get();
+    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+    List<dynamic> following = (userData['Followings'] as List<dynamic>?) ?? [];
+    if (following.contains(userUID)) {
+      following.remove(userUID);
+      await userRef.update({'Followings': following});
+    }
   }
 }

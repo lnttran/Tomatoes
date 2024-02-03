@@ -6,6 +6,7 @@ import 'package:tomatoes/invertory/ingreCard.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:tomatoes/invertory/ingredientsClass.dart';
+import 'package:tomatoes/invertory/suggestedIngredients.dart';
 import 'package:tomatoes/method/APIs.dart';
 
 class inventoryPage extends StatefulWidget {
@@ -17,15 +18,12 @@ class inventoryPage extends StatefulWidget {
 
 class _inventoryPageState extends State<inventoryPage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  String capitalizeFirstLetter(String text) {
-    return text.isNotEmpty ? text[0].toUpperCase() + text.substring(1) : text;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.centerLeft, // Align text to the left
@@ -58,10 +56,9 @@ class _inventoryPageState extends State<inventoryPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+        child: SingleChildScrollView(
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('Users')
@@ -71,8 +68,13 @@ class _inventoryPageState extends State<inventoryPage> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final ingredients = snapshot.data!.docs;
+
+                if (ingredients.isEmpty) {
+                  return const Center(
+                    child: Text("Add your available ingredient!"),
+                  );
+                }
                 Map<String, Map<String, IngredientClass>> ingredientList = {};
-                Map<String, IngredientClass> thisIngredient = {};
                 if (ingredients.isNotEmpty) {
                   for (var ingredient in ingredients) {
                     Map<String, dynamic> ingredientData = ingredient.data();
@@ -85,7 +87,7 @@ class _inventoryPageState extends State<inventoryPage> {
                       ingredientList[category] = {};
                     }
 
-                    // Add the ingredient to the inner map
+                    // Add the inagredient to the inner map
                     ingredientList[category]![name] =
                         IngredientClass.fromJson(ingredientData);
                   }
@@ -97,7 +99,7 @@ class _inventoryPageState extends State<inventoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          capitalizeFirstLetter(entry.key),
+                          APIs.capitalizeFirstLetter(entry.key),
                           textAlign: TextAlign.start,
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -135,39 +137,55 @@ class _inventoryPageState extends State<inventoryPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       //use ClipRRect to clip its child. (Clip rounded rectangle)
-      floatingActionButton: ClipRRect(
-        borderRadius: BorderRadius.circular(25.0),
-        child: SizedBox(
-          width: 200,
-          height: 50,
-          child: FloatingActionButton(
-              onPressed: () {
-                // Call the exportData function here
-              },
-              backgroundColor: const Color(0xFFF83015),
-              elevation: 10,
-              splashColor: const Color.fromARGB(
-                  255, 171, 0, 0), // Set the splash color when clicked
-              highlightElevation:
-                  8, // Set the elevation during click (higher than regular elevation)
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Find recipe',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const Icon(
-                      Icons.arrow_forward,
-                      color: Colors.white,
-                    )
-                  ],
-                ),
-              )),
+      floatingActionButton: Container(
+        width: 200,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(25)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 138, 138, 138)
+                  .withOpacity(0.2), // Shadow color
+              spreadRadius: 2, // Spread radius
+              blurRadius: 10, // Blur radius
+              offset: const Offset(2, 4), // Offset in the x, y direction
+            ),
+          ],
         ),
+        child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const suggestedIngredientPage(),
+                  ));
+            },
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+            backgroundColor: const Color(0xFFF83015),
+            elevation: 10,
+            splashColor: const Color.fromARGB(
+                255, 171, 0, 0), // Set the splash color when clicked
+            highlightElevation:
+                8, // Set the elevation during click (higher than regular elevation)
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Find recipe',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                  )
+                ],
+              ),
+            )),
       ),
     );
   }

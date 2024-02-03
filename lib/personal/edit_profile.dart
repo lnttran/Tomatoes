@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tomatoes/Components/text_box.dart';
-import 'package:tomatoes/Components/userClass.dart';
 import 'package:tomatoes/main.dart';
 import 'package:tomatoes/method/APIs.dart';
 

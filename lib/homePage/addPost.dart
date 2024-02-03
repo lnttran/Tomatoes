@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart';
 import 'package:tomatoes/Components/label_textfield.dart';
 import 'package:tomatoes/Components/recipe.dart';
 import 'package:tomatoes/Components/material_button.dart';
+import 'package:tomatoes/homePage/addImageSection.dart';
 import 'package:tomatoes/method/APIs.dart';
 
 class addPost extends StatefulWidget {
@@ -392,8 +396,20 @@ class _addPostState extends State<addPost> {
                         const SizedBox(
                           height: 40,
                         ),
+                        addImageSection(),
+                        const SizedBox(
+                          height: 40,
+                        ),
                         material_button(
                           onTap: () async {
+                            addImageSection imageSection =
+                                const addImageSection();
+                            String? postImage = imageSection.getPostImage();
+                            String? imageURL;
+                            if (postImage != null) {
+                              imageURL =
+                                  await APIs.uploadPostPicture(File(postImage));
+                            }
                             if (validateAllFormKeys()) {
                               removeEmptyControllers();
                               List<String> ingredients = ingredientsControllers
@@ -409,7 +425,7 @@ class _addPostState extends State<addPost> {
                                 description: descriptionController.text,
                                 ingredients: ingredients,
                                 steps: instructions,
-                                thumbnail: '',
+                                thumbnail: imageURL!,
                                 totalCal: double.parse(tolCalController.text),
                                 timeSpend: int.parse(timeSpendController.text),
                                 numOfServings:

@@ -36,7 +36,6 @@ dependencies:
   intl: ^0.18.1
   modal_bottom_sheet: ^2.1.2
   csv: ^5.1.1
-  easy_search_bar: ^2.5.0
   dropdown_search: ^5.0.6
   dio: ^4.0.0
   dropdown_textfield: ^1.0.8
@@ -52,7 +51,7 @@ dependencies:
   flutter_sliding_up_panel: ^2.1.1
 
   # For access to firebase storage ( uploading files)
-  firebase_storage: ^11.2.6
+  firebase_storage: ^11.6.0
   
 
   
@@ -66,12 +65,13 @@ dependencies:
   google_fonts: ^5.1.0
   google_nav_bar: ^5.0.6
   firebase_core: ^2.15.1
-  firebase_auth: ^4.7.3
+  firebase_auth: ^4.16.0
   cloud_firestore: ^4.8.5
   cached_network_image: ^3.3.1
-  image_picker: ^1.0.2
-  image_cropper: ^5.0.0
+  image_picker: ^1.0.7
+  image_cropper: ^5.0.1
   http: ^1.1.0
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:

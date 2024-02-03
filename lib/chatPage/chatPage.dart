@@ -49,7 +49,7 @@ class _chatPageState extends State<chatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppBar(
           leading: GestureDetector(
             onTap: () {
@@ -83,7 +83,7 @@ class _chatPageState extends State<chatPage> {
                       //shape: BoxShape.circle,
                       color: Color(0xFFF83015),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person,
                       color: Colors.white,
                     ),
